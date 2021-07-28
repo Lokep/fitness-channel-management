@@ -1,0 +1,102 @@
+@for $value from 1 to 10 {
+	$cls: $value * 5;
+	.mt-#{$cls} {
+    margin-top: (2px * $cls);
+  }
+  .mb-#{$cls} {
+    margin-bottom: ($cls * 2px);
+  }
+  .ml-#{$cls} {
+    margin-left: ($cls * 2px);
+  }
+  .mr-#{$cls} {
+    margin-right: ($cls * 2px);
+  }
+  .pt-#{$cls} {
+    padding-top: ($cls * 2px);
+  }
+  .pb-#{$cls} {
+    padding-bottom: ($cls * 2px);
+  }
+  .pl-#{$cls} {
+    padding-left: ($cls * 2px);
+  }
+  .pr-#{$cls} {
+    padding-right: ($cls * 2px);
+  }
+}
+
+.flex {
+  display: flex;
+}
+
+.align-center {
+  display: flex;
+  align-items: center;
+}
+
+.justify-center {
+  display: flex;
+  justify-content: center;
+}
+
+.justify-around {
+  display: flex;
+  justify-content: space-around;
+}
+
+.justify-between {
+  display: flex;
+  justify-content: space-between;
+}
+
+.app-main {
+  box-sizing: border-box;
+  padding: 10px;
+  background-color: #f5f7fb;
+}
+
+
+.tools {
+  width: 100%;
+  background-color: #fff;
+  box-sizing: border-box;
+  padding: 5px 20px;
+  border-radius: 4px;
+  align-items: flex-start;
+
+  &-list {
+    flex: 1;
+    flex-wrap: wrap;
+  }
+
+  &-btns {
+    flex-shrink: 0;
+    margin: 5px 0;
+  }
+
+  &-item {
+    font-size: 12px;
+    margin-right: 20px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+
+    &__label {
+      flex-shrink: 0;
+      margin-right: 10px;
+      width: 4em;
+    }
+  }
+}
+
+
+.content {
+  background-color: #fff;
+  box-sizing: border-box;
+  padding: 10px;
+
+  .pagination {
+    display: flex;
+    justify-content: flex-end;
+  }
+}
