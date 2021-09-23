@@ -62,7 +62,7 @@ module.exports = [
   },
 
 
-  /**  */
+  /** 饮食打卡获取详情 */
   {
     url: '/Admin/Diet/clockGet',
     type: 'post',
@@ -106,6 +106,30 @@ module.exports = [
       return {
         result: 1,
         data,
+        message: 'success'
+      }
+    }
+  },
+
+
+  /** 饮食打卡记录更新 */
+  {
+    url: '/Admin/Diet/clockUpdate',
+    type: 'post',
+    response: ({ body }) => {
+
+      const MAX_ADVICE_LEN = 300
+      const { advice = '', id } = body
+
+      if (!id || advice.length > MAX_ADVICE_LEN) {
+        return {
+          result: 0,
+          message: 'id不可为空，且建议不可超过300个字'
+        }
+      }
+
+      return {
+        result: 1,
         message: 'success'
       }
     }
