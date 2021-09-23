@@ -43,5 +43,22 @@ module.exports = [
       }
     }
   },
-  
+
+
+  /** 饮食计划删除 */
+  {
+    url: '/Admin/Diet/planDel',
+    type: 'post',
+    response: ({ body }) => {
+
+      const result = Math.ceil(Math.random() * 10) % 3 == 0 ? 0 : 1
+
+      const { id = '' } = body
+
+      return {
+        result: id && result ? 1 : 0,
+        message: id && result == 1 ? '成功' : '失败'
+      }
+    }
+  }
 ]
