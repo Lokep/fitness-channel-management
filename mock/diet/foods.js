@@ -52,7 +52,18 @@ module.exports = [
     }
   },
 
- 
+  /** 食品库 新增食品 */
+  {
+    url: '/Admin/DICT/foodAdd',
+    type: 'post',
+    response: () => {
+
+      return {
+        result: 1,
+        message: 'success'
+      }
+    }
+  },
 
   /** 食品库 删除食品 */
   {
