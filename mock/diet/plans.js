@@ -191,7 +191,7 @@ module.exports = [
           ...item,
 
           id: "@increment",
-          name: "@cname()",
+          name: "@cname",
           unit: '克',
           categoryId: categoryId,
           heat: "@integer(1, 3)",
