@@ -49,16 +49,78 @@ module.exports = [
   {
     url: '/Admin/Diet/planDel',
     type: 'post',
-    response: ({ body }) => {
+    response: ({
+      body
+    }) => {
 
       const result = Math.ceil(Math.random() * 10) % 3 == 0 ? 0 : 1
 
-      const { id = '' } = body
+      const {
+        id = ''
+      } = body
 
       return {
         result: id && result ? 1 : 0,
         message: id && result == 1 ? '成功' : '失败'
       }
+    }
+  },
+
+  /** 新增 */
+  {
+    response: ({
+      body
+    }) => {
+      const {
+        createTime,
+        creatorId,
+        creatorName,
+        dayCount,
+        id,
+        isDelete,
+        planName,
+        receiveNums,
+        ruleList,
+        updateTime
+      } = body
+
+
+      const RULE_LIST = [{
+        "dayNum": 0,
+        "detailList": [{
+          "categoryId": "string",
+          "foodId": "string",
+          "id": 0,
+          "nums": 0,
+          "ruleId": 0
+        }],
+        "id": "string",
+        "mealType": 0,
+        "planId": "string"
+      }]
+
+      if (!creatorName || !createTime || !creatorId || !dayCount || !planName || !updateTime || !receiveNums) {
+        return {
+          result: 0,
+          message: '新增失败'
+        }
+      } else if (
+        !ruleList || 
+        ruleList.length == 0 ||
+        ruleList.findIndex(item => !item.detailList || item.detailList.length == 0) > -1
+      ) {
+        return {
+          result: 0,
+          message: '新增失败'
+        }
+      } 
+
+
+      return {
+        result: 1,
+        message: '新增成功'
+      }
+
     }
   }
 ]
