@@ -84,21 +84,6 @@ module.exports = [
         updateTime
       } = body
 
-
-      const RULE_LIST = [{
-        "dayNum": 0,
-        "detailList": [{
-          "categoryId": "string",
-          "foodId": "string",
-          "id": 0,
-          "nums": 0,
-          "ruleId": 0
-        }],
-        "id": "string",
-        "mealType": 0,
-        "planId": "string"
-      }]
-
       if (!creatorName || !createTime || !creatorId || !dayCount || !planName || !updateTime || !receiveNums) {
         return {
           result: 0,
