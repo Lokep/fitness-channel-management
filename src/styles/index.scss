@@ -64,13 +64,39 @@ div:focus {
 .fl {
   float: left;
 }
-
-.pr-5 {
-  padding-right: 5px;
-}
-
-.pl-5 {
-  padding-left: 5px;
+@for $var from 1 through 10{
+  $num:$var*5;
+  /* m-5 m-10 m-15  */
+  .m-#{$num}{
+    margin: $num+px;
+  }
+  .mt-#{$num}{
+    margin-top: $num+px;
+  }
+  .mr-#{$num}{
+    margin-right: $num+px;
+  }
+  .mb-#{$num}{
+    margin-bottom: $num+px;
+  }
+  .ml-#{$num}{
+    margin-left: $num+px;
+  }
+  .p-#{$num}{
+    padding: $num+px;
+  }
+  .pt-#{$num}{
+    padding-top: $num+px;
+  }
+  .pr-#{$num}{
+    padding-right: $num+px;
+  }
+  .pb-#{$num}{
+    padding-bottom: $num+px;
+  }
+  .pl-#{$num}{
+    padding-left: $num+px;
+  }
 }
 
 .block {
@@ -185,7 +211,12 @@ aside {
 .multiselect {
   line-height: 16px;
 }
-
+.cursor{
+  cursor: pointer;
+  &:hover{
+    opacity: 0.8;
+  }
+}
 .multiselect--active {
   z-index: 1000 !important;
 }
