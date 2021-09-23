@@ -6,13 +6,22 @@ const role = require('./role')
 const article = require('./article')
 // const search = require('./remote-search')
 const diet = require('./diet/index')
+const sportsPlan = require('./sports-plan')
+
+const COLOR = {
+  PRIMARY: '#409EFF', 
+  SUCCESS: '#67C23A', 
+  WARN: '#E6A23C', 
+  DANGER: '#F56C6C'
+}
 
 const mocks = [
   ...user,
   ...role,
   ...article,
   // ...search,
-  ...diet
+  ...diet,
+  ...sportsPlan
 ]
 
 // for front mock
@@ -34,7 +43,12 @@ function mockXHR() {
   }
 
   function XHR2ExpressReqWrap(respond) {
+
     return function(options) {
+      console.log(`%c ${options.url.split('/').slice(-3).join('/')}`, handleStyle('SUCCESS'))
+      const tableHeader =  Object.keys(JSON.parse(options.body))
+      console.table(JSON.parse(options.body), tableHeader)
+
       let result = null
       if (respond instanceof Function) {
         const { body, type, url } = options
@@ -49,6 +63,15 @@ function mockXHR() {
       }
       return Mock.mock(result)
     }
+  }
+
+  function handleStyle(status) {
+    return `background: ${COLOR[status.toUpperCase()]}; 
+            color: #fff;
+            border-radius: 2px;
+            padding: 3px 2px; text-align: center;
+            font-weight: 400;
+            width: 30pt;`
   }
 
   for (const i of mocks) {

@@ -1,8 +1,9 @@
 import request from '@/utils/request'
 
-export const getPlanList = params => request({
-  url: '/diet/plan/page',
-  params
+export const getPlanList = data => request({
+  url: '/Admin/Diet/planList',
+  data,
+  method: 'post'
 })
 
 export const deletePlan = params => request({

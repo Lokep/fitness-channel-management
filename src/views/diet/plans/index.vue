@@ -269,10 +269,10 @@ export default {
       params: {
         pageNum: 1,
         pageSize: 10,
-        planName: '',
-        beginTime: '',
-        endTime: '',
-        creatorName: ''
+        planName: null,
+        beginTime: null,
+        endTime: null,
+        creatorName: null
       },
       form: {
         planName: '',
@@ -316,7 +316,7 @@ export default {
     }
   },
   created() {
-    this.getDishCategoryList()
+    // this.getDishCategoryList()
     this.getPlanList()
   },
   methods: {
@@ -332,10 +332,9 @@ export default {
         ...this.params,
         ...params
       }).then((res) => {
-        if (res.res === 0) {
-          const { list, total } = res.data
-          this.plans = list
-          this.total = total
+        if (res.result === 1) {
+          this.plans = res.data
+          this.total = res.total
         }
       })
     },
