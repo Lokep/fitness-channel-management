@@ -119,5 +119,18 @@ module.exports = [
         message: 'success'
       }
     }
-  }
+  },
+
+  /** 食品库 编辑食品 */
+  {
+    url: '/Admin/DICT/foodUpdate',
+    type: 'post',
+    response: () => {
+
+      return {
+        result: 1,
+        message: 'success'
+      }
+    }
+  },
 ]
