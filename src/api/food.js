@@ -1,5 +1,7 @@
 import request from '@/utils/request'
-
+/**
+ * @categoryType {string} required {1|食物}
+ */
 export const getFoodCategorytList = (data = {}) => request({
   url: '/Admin/DICT/category-list',
   data,

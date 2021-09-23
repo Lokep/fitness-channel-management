@@ -433,7 +433,9 @@ export default {
     },
     /* 食物分类 */
     getFoodCategorytList() {
-      getFoodCategorytList().then(res => {
+      getFoodCategorytList({
+        categoryType: 1
+      }).then(res => {
         this.categorytList = res.data.list
       })
     },

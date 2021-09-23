@@ -17,7 +17,7 @@ module.exports = [
             ]
           })
         },
-        res: 0
+        result: 1
       }
     }
   },
@@ -45,12 +45,12 @@ module.exports = [
             })
           },
           message: '请求成功',
-          res: 0
+          result: 1
         }
       } else {
         /* 如果没有分类id */
         return {
-          res: 1,
+          result: 0,
           message: 'post-data categoryId is not defined'
         }
       }
