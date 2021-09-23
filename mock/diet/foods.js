@@ -50,5 +50,30 @@ module.exports = [
         message: "查询成功"
       }
     }
+  },
+
+ 
+
+  /** 食品库 删除食品 */
+  {
+    url: '/Admin/DICT/foodDel',
+    type: 'post',
+    response: ({ body }) => {
+
+      const { id } = body
+      
+      if (!id) {
+        return {
+          result: 0,
+          message: 'id不能为空'
+        }
+      }
+
+      return {
+        result: 1,
+        message: 'success'
+      }
+
+    }
   }
 ]
