@@ -59,5 +59,55 @@ module.exports = [
         message: "查询成功"
       }
     }
+  },
+
+
+  /**  */
+  {
+    url: '/Admin/Diet/clockGet',
+    type: 'post',
+    response: ({ body }) => {
+      const  { id } = body
+      
+      if (!id) {
+        return {
+          result: 0,
+          data: {},
+          message: 'id不能为空'
+        }
+      }
+
+      let data = []
+
+      for (let i = 1; i <= 4; i++) {
+        data.push({
+          "id": "@increment",
+          "memberId": "@increment",
+          "planName": "@ctitle",
+          "mealType": i,
+          "submitTime": Mock.random.datetime(TIME_FORMAT),
+          "picUrl": Mock.random.image('100*100', 'skyblue'),
+          "dayNum": '@integer(1, 10)',
+          "dayCount": '@integer(1, 10)',
+          "suggestTake": '@integer(1, 10)',
+          "describe|描述内容": Mock.random.cparagraph(1, 3),
+          "advice": Mock.random.cparagraph(1, 3),
+          "detailList": [
+            {
+              "id": "@increment",
+              categoryId: "@increment",
+              foodId: "@increment",
+              nums: '@integer(1, 10)'
+            }
+          ],
+        })
+      }
+
+      return {
+        result: 1,
+        data,
+        message: 'success'
+      }
+    }
   }
 ]
