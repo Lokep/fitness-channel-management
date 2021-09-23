@@ -110,6 +110,51 @@ module.exports = [
     }
   },
 
+
+  {
+    url: '/Admin/Diet/planUpdate',
+    type: 'post',
+    response: ({
+      body
+    }) => {
+      const {
+        createTime,
+        creatorId,
+        creatorName,
+        dayCount,
+        id,
+        isDelete,
+        planName,
+        receiveNums,
+        ruleList,
+        updateTime
+      } = body
+
+      if (!id || !creatorName || !createTime || !creatorId || !dayCount || !planName || !updateTime || !receiveNums) {
+        return {
+          result: 0,
+          message: '新增失败'
+        }
+      } else if (
+        !ruleList || 
+        ruleList.length == 0 ||
+        ruleList.findIndex(item => !item.detailList || item.detailList.length == 0) > -1
+      ) {
+        return {
+          result: 0,
+          message: '新增失败'
+        }
+      } 
+
+
+      return {
+        result: 1,
+        message: '新增成功'
+      }
+
+    }
+  },
+
   /** 食物分类（下拉框） */
   {
     url: '/Admin/DICT/category-list',
