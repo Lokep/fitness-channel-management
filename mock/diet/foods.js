@@ -86,5 +86,38 @@ module.exports = [
       }
 
     }
+  },
+
+  /** 食品库 获取详情 */
+  {
+    url: '/Admin/DICT/foodGet',
+    type: 'post',
+    response: ({ body }) => {
+      const { id } = body
+      
+      if (!id) {
+        return {
+          result: 0,
+          message: 'id不能为空'
+        }
+      }
+      return {
+        result: 1,
+        data: {
+          "id": "@increment",
+          "name": "@cname",
+          "categoryId": Mock.Random.integer(1, 99),
+          "unit": 'g',
+          "heat": Mock.Random.integer(1, 99),
+          "protein": Mock.Random.integer(1, 99),
+          "fat": Mock.Random.integer(1, 99),
+          "carbonWater": Mock.Random.integer(1, 99),
+          "creatorId": "@increment",
+          "creatorName": "@cname",
+          "createTime": Mock.Random.datetime(TIME_FORMAT),
+        },
+        message: 'success'
+      }
+    }
   }
 ]
