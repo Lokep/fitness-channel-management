@@ -34,10 +34,10 @@ service.interceptors.response.use(
 
   response => {
     const res = response.data
-    if (process.env.NODE_ENV === 'development') {
-      console.log(res)
-    }
-    if (res.res !== 0) {
+    // if (process.env.NODE_ENV === 'development') {
+    //   console.log(res)
+    // }
+    if (res.result !== 1) {
       Message({
         message: res.message || 'Error',
         type: 'error',
