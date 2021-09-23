@@ -110,7 +110,7 @@ module.exports = [
     }
   },
 
-  /** 食物分类下拉 */
+  /** 食物分类（下拉框） */
   {
     url: '/Admin/DICT/category-list',
     type: 'post',
@@ -173,6 +173,38 @@ module.exports = [
           }
         ],
         message: '成功'
+      }
+    }
+  },
+
+  /** 食物（下拉框） */
+  {
+    url: '/Admin/DICT/food-list',
+    type: 'post',
+    response: ({ body }) => {
+
+      const { categoryId } = body
+
+      const data = new Array(7).fill({}).map(item => {
+
+        return {
+          ...item,
+
+          id: "@increment",
+          name: "@cname()",
+          unit: '克',
+          categoryId: categoryId,
+          heat: "@integer(1, 3)",
+          protein: "@integer(1, 5)",
+          fat: "@integer(1, 3)",
+          carbonWater: "@integer(1, 8)",
+        }
+      })
+
+      return {
+        result: 1,
+        data,
+        message: 'success'
       }
     }
   }
