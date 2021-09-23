@@ -2,15 +2,14 @@ const Mock = require('mockjs')
 const TIME_FORMAT = 'yyyy-MM-dd hh:mm:ss'
 
 module.exports = [
-  
+
   /** 饮食打卡列表 */
   {
     url: '/Admin/Diet/clockList',
     type: 'post',
     response: ({ body }) => {
-
-      const LAST_PAGE = 3,
-        TOTAL = 26
+      const LAST_PAGE = 3
+      const TOTAL = 26
 
       const {
         beginTime,
@@ -49,26 +48,24 @@ module.exports = [
           carbonWater: Mock.Random.integer(1, 10),
           submitTime: Mock.Random.datetime(TIME_FORMAT),
         }
-
       })
 
       return {
         result: 1,
         total: TOTAL,
         data,
-        message: "查询成功"
+        message: '查询成功'
       }
     }
   },
-
 
   /** 饮食打卡获取详情 */
   {
     url: '/Admin/Diet/clockGet',
     type: 'post',
     response: ({ body }) => {
-      const  { id } = body
-      
+      const { id } = body
+
       if (!id) {
         return {
           result: 0,
@@ -77,7 +74,7 @@ module.exports = [
         }
       }
 
-      let data = []
+      const data = []
 
       for (let i = 1; i <= 4; i++) {
         data.push({
@@ -94,12 +91,12 @@ module.exports = [
           "advice": Mock.Random.cparagraph(1, 3),
           "detailList": [
             {
-              "id": "@increment",
-              categoryId: "@increment",
-              foodId: "@increment",
+              'id': '@increment',
+              categoryId: '@increment',
+              foodId: '@increment',
               nums: '@integer(1, 10)'
             }
-          ],
+          ]
         })
       }
 
@@ -111,13 +108,11 @@ module.exports = [
     }
   },
 
-
   /** 饮食打卡记录更新 */
   {
     url: '/Admin/Diet/clockUpdate',
     type: 'post',
     response: ({ body }) => {
-
       const MAX_ADVICE_LEN = 300
       const { advice = '', id } = body
 

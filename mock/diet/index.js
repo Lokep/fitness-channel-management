@@ -4,7 +4,7 @@ const Foods = require('./foods')
 const Plans = require('./plans')
 const Records = require('./records')
 
-let List = []
+const List = []
 const count = 10
 for (let i = 0; i < count; i++) {
   List.push(Mock.mock({
@@ -18,6 +18,28 @@ for (let i = 0; i < count; i++) {
 }
 
 module.exports = [
+  {
+    url: '/diet/plan/page',
+    type: 'get',
+    response: config => {
+      return {
+        data: {
+          ...Mock.mock({
+            'list|10': [{
+              id: '@increment',
+              planName: () => Mock.Random.ctitle(5),
+              dayCount: '@integer(1, 3)',
+              creatorName: () => Mock.Random.cname(),
+              createTime: '@datetime',
+              receiveNums: '@integer(1, 3)'
+            }]
+          }),
+          total: 20
+        },
+        res: 0
+      }
+    }
+  },
   // {
   //   url: '/diet/plan/page',
   //   type: 'get',
@@ -38,7 +60,7 @@ module.exports = [
   //       },
   //       result: 1
   //     }
-       
+
   //   }
   // },
   {

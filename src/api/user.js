@@ -5,6 +5,16 @@ export const login = data => request({
   data,
   method: 'post'
 })
+export const getInfo = data => request({
+  url: '/sys/login',
+  data,
+  method: 'post'
+})
+export const logout = data => request({
+  url: '/sys/login',
+  data,
+  method: 'post'
+})
 
 // 权限新增或者更新
 export const updatePermission = data => request({

@@ -1,4 +1,13 @@
 <style lang="scss" scoped>
+::v-deep .dialog-form{
+  .el-input-number {
+    margin-top: 3px;
+  }
+  .el-select ~ .el-input-number {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+}
 .dialog-form {
   &__el + &__el {
     margin-left: 10px;
@@ -99,6 +108,7 @@
           size="mini"
           type="primary"
           icon="el-icon-plus"
+          @click="creareHandle"
         >新建</el-button>
       </div>
     </div>
@@ -142,7 +152,7 @@
     <el-dialog
       :title="form.id ? '编辑饮食计划' : '新建饮食计划'"
       :visible.sync="dialogFormVisible"
-      width="40%"
+      width="768px"
     >
       <el-form :model="form">
         <el-form-item label="计划名称" label-width="80px" required>
@@ -154,6 +164,9 @@
             maxlength="20"
           />
         </el-form-item>
+        <el-form-item label="打卡天数" label-width="80px" required>
+          <el-input-number v-model="form.dayCount" size="mini" :min="1" :max="9999" label="描述文字" />
+        </el-form-item>
 
         <!--  -->
         <div class="flex dialog-form">
@@ -161,10 +174,11 @@
             <DietPlanForm
               v-for="(item, index) in form.ruleList"
               :key="index"
+              class="mb-5"
               @updateForm="updateForm"
             >
               <template slot="title">
-                <div>第{{ item.dayNum }}天</div>
+                <div>第{{ item.dayNum }}天{{ index + 1 }}</div>
                 <div>热量：400 千卡</div>
                 <div>蛋白：2.7 克</div>
                 <div>脂肪：3.0 克</div>
@@ -179,28 +193,37 @@
                       size="mini"
                       @click="(e) => addDetailListItem(index, i, 0)"
                     >
-                      新增食物
+                      新增食物x
                     </el-button>
                     <div v-for="(el , idx) in it.detailList" v-else :key="idx" style="margin-bottom: 10px;">
-                      <div class="justify-between">
-                        <el-input
+                      <div class="justify-between flex">
+                        <el-select
                           v-model="el.categoryId"
                           size="mini"
                           autocomplete="off"
-                        />
-                        <el-input
+                          @change="foodCategoryChange($event)"
+                        >
+                          <el-option
+                            v-for="categoryItem in categorytList"
+                            :key="categoryItem.id"
+                            :label="categoryItem.name"
+                            :value="categoryItem.id"
+                          />
+                        </el-select>
+                        <el-select
                           v-model="el.foodId"
                           size="mini"
                           autocomplete="off"
-                        />
-                        <div class="flex">
-                          <el-input
-                            v-model="el.nums"
-                            size="mini"
-                            autocomplete="off"
+                        >
+                          <el-option
+                            v-for="categoryItem in foodList"
+                            :key="categoryItem.id"
+                            :label="categoryItem.name"
+                            :value="categoryItem.id"
                           />
-                          杯
-                        </div>
+                        </el-select>
+                        <el-input-number v-model="el.nums" size="mini" :min="1" :max="9999" label="描述文字" />
+                        杯
                         <i class="el-icon-circle-plus dialog-form__el" @click="addDetailListItem(index, i, idx)" />
                         <i class="el-icon-error dialog-form__el" />
                       </div>
@@ -211,10 +234,15 @@
                   </el-form-item>
                 </div>
               </div>
+              <template slot="right">
+                <div class="flex">
+                  <i class="el-icon-circle-plus dialog-form__el cursor" @click="addItem" />
+                  <i v-if="index > 0" class="el-icon-error dialog-form__el cursor" @click="delItemHandle(index)" />
+                </div>
+              </template>
             </DietPlanForm>
           </div>
-          <i class="el-icon-circle-plus dialog-form__el" />
-          <i class="el-icon-error dialog-form__el" />
+
         </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -235,20 +263,22 @@
 </template>
 
 <script>
+import user from '@/mixin/user'
 import { deepClone, parseTime } from '@/utils'
 import { getPlanList, deletePlan } from '@/api/diet'
+import { getFoodCategorytList, getFoodSelectList } from '@/api/food'
 import DietPlanForm from '../components/diet-plan-form.vue'
 import { getDishCategoryList } from '@/api/diet'
-// const RULE_LIST_ITEM = {
-//   dayNum: 1,
-//   dayList: [
-//     {
-//       mealType: 1,
-//       detailList: []
-//     }
-//   ]
+const RULE_LIST_ITEM = {
+  dayNum: 1,
+  dayList: [
+    {
+      mealType: 1,
+      detailList: []
+    }
+  ]
 
-// }
+}
 const DETAIL_LIST_ITEM = {
   categoryId: '',
   foodId: '',
@@ -263,6 +293,8 @@ export default {
       return parseTime(v, '{y}-{m}-{d}')
     }
   },
+  /* mixins 用户权限 备用 */
+  mixins: [user],
   data() {
     return {
       dialogFormVisible: false,
@@ -275,6 +307,12 @@ export default {
         creatorName: null
       },
       form: {
+        createTime: 0,
+        creatorId: '',
+        creatorName: '',
+        id: '',
+        isDelete: 0,
+        receiveNums: 0,
         planName: '',
         dayCount: 1,
         ruleList: [
@@ -292,7 +330,11 @@ export default {
       time: [],
       plans: [],
       current: 1,
-      total: 10
+      total: 10,
+      /* 食物分类 */
+      categorytList: [],
+      /* 食物下拉 */
+      foodList: []
     }
   },
   watch: {
@@ -318,6 +360,7 @@ export default {
   created() {
     // this.getDishCategoryList()
     this.getPlanList()
+    this.getFoodCategorytList()
   },
   methods: {
     changePage(e) {
@@ -362,8 +405,16 @@ export default {
     updateForm(e) {
       console.log(e)
     },
+    addItem(index) {
+      /* 新增计划第几天 */
+      // const List = {}
+      this.form.ruleList.push(RULE_LIST_ITEM)
+    },
+    delItemHandle(index) {
+      this.form.ruleList.splice(index, 1)
+    },
     addDetailItem(index, i) {
-      this.form.ruleList[index].dayList[i].detailList.push(DETAIL_LIST_ITEM)
+      this.form.ruleList[index].dayList[i].detailList.push(RULE_LIST_ITEM)
     },
     addDetailListItem(index, i, idx) {
       this.form.ruleList[index].dayList[i].detailList.splice(idx, 0, DETAIL_LIST_ITEM)
@@ -374,6 +425,28 @@ export default {
         categoryType: 1
       }).then(res => {
         console.log(res)
+      })
+    },
+    /* 添加饮食计划 */
+    creareHandle() {
+      this.dialogFormVisible = true
+    },
+    /* 食物分类 */
+    getFoodCategorytList() {
+      getFoodCategorytList({
+        categoryType: 1
+      }).then(res => {
+        this.categorytList = res.data.list
+      })
+    },
+    /* 食物分类下拉改变时,ps: 应该要加参数 */
+    foodCategoryChange(value) {
+      this.getFoodSelectList(value)
+    },
+    /* 食物下拉列表 */
+    getFoodSelectList(categoryId) {
+      getFoodSelectList({ categoryId }).then(res => {
+        this.foodList = res.data.list
       })
     }
   }

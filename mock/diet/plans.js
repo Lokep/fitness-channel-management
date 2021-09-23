@@ -7,9 +7,8 @@ module.exports = [
     url: '/Admin/Diet/planList',
     type: 'post',
     response: config => {
-
-      const LAST_PAGE = 3,
-        TOTAL = 26
+      const LAST_PAGE = 3
+      const TOTAL = 26
 
       const {
         beginTime,
@@ -33,18 +32,16 @@ module.exports = [
           createTime: createTime || Mock.Random.datetime(TIME_FORMAT),
           receiveNums: Mock.Random.integer(1, 10)
         }
-
       })
 
       return {
         result: 1,
         total: TOTAL,
         data,
-        message: "查询成功"
+        message: '查询成功'
       }
     }
   },
-
 
   /** 饮食计划删除 */
   {
@@ -62,7 +59,7 @@ module.exports = [
 
       return {
         result: id && result ? 1 : 0,
-        message: id && result == 1 ? '成功' : '失败'
+        message: id && result === 1 ? '成功' : '失败'
       }
     }
   },
@@ -77,8 +74,8 @@ module.exports = [
         creatorId,
         creatorName,
         dayCount,
-        id,
-        isDelete,
+        // id,
+        // isDelete,
         planName,
         receiveNums,
         ruleList,
@@ -91,25 +88,22 @@ module.exports = [
           message: '新增失败'
         }
       } else if (
-        !ruleList || 
-        ruleList.length == 0 ||
-        ruleList.findIndex(item => !item.detailList || item.detailList.length == 0) > -1
+        !ruleList ||
+        ruleList.length === 0 ||
+        ruleList.findIndex(item => !item.detailList || item.detailList.length === 0) > -1
       ) {
         return {
           result: 0,
           message: '新增失败'
         }
-      } 
-
+      }
 
       return {
         result: 1,
         message: '新增成功'
       }
-
     }
   },
-
 
   {
     url: '/Admin/Diet/planUpdate',
@@ -123,7 +117,7 @@ module.exports = [
         creatorName,
         dayCount,
         id,
-        isDelete,
+        // isDelete,
         planName,
         receiveNums,
         ruleList,
@@ -136,22 +130,20 @@ module.exports = [
           message: '新增失败'
         }
       } else if (
-        !ruleList || 
-        ruleList.length == 0 ||
-        ruleList.findIndex(item => !item.detailList || item.detailList.length == 0) > -1
+        !ruleList ||
+        ruleList.length === 0 ||
+        ruleList.findIndex(item => !item.detailList || item.detailList.length === 0) > -1
       ) {
         return {
           result: 0,
           message: '新增失败'
         }
-      } 
-
+      }
 
       return {
         result: 1,
         message: '新增成功'
       }
-
     }
   },
 
@@ -160,10 +152,9 @@ module.exports = [
     url: '/Admin/DICT/category-list',
     type: 'post',
     response: ({ body }) => {
-
       const { categoryType } = body
 
-      if (categoryType != 1) {
+      if (categoryType !== 1) {
         return {
           result: 0,
           data: [],
@@ -227,22 +218,20 @@ module.exports = [
     url: '/Admin/DICT/food-list',
     type: 'post',
     response: ({ body }) => {
-
       const { categoryId } = body
 
       const data = new Array(7).fill({}).map(item => {
-
         return {
           ...item,
 
-          id: "@increment",
-          name: "@cname",
+          id: '@increment',
+          name: '@cname',
           unit: '克',
           categoryId: categoryId,
-          heat: "@integer(1, 3)",
-          protein: "@integer(1, 5)",
-          fat: "@integer(1, 3)",
-          carbonWater: "@integer(1, 8)",
+          heat: '@integer(1, 3)',
+          protein: '@integer(1, 5)',
+          fat: '@integer(1, 3)',
+          carbonWater: '@integer(1, 8)'
         }
       })
 

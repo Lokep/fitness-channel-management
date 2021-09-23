@@ -12,42 +12,39 @@ module.exports = [
     url: '/Admin/DICT/food-page',
     type: 'post',
     response: config => {
-
-      const LAST_PAGE = 3,
-        TOTAL = 26
+      const LAST_PAGE = 3
+      const TOTAL = 26
 
       const {
-        name, 
+        name,
         categoryId,
         pageNum,
-        pageSize = 10,
+        pageSize = 10
       } = config.body
 
-      let data = new Array(pageNum == LAST_PAGE ? 6 : pageSize).fill({}).map(item => {
-
+      const data = new Array(pageNum === LAST_PAGE ? 6 : pageSize).fill({}).map(item => {
         return {
           ...item,
           id: '@increment',
           name: name || '@title(1, 3)',
           categoryId: categoryId || Mock.Random.integer(1, 99),
 
-          "unit": 'g',
-          "heat": Mock.Random.integer(1, 99),
-          "protein": Mock.Random.integer(1, 99),
-          "fat": Mock.Random.integer(1, 99),
-          "carbonWater": Mock.Random.integer(1, 99),
-          "creatorId": "@increment",
-          "creatorName": "@cname",
-          "createTime": Mock.Random.datetime(TIME_FORMAT),
+          'unit': 'g',
+          'heat': Mock.Random.integer(1, 99),
+          'protein': Mock.Random.integer(1, 99),
+          'fat': Mock.Random.integer(1, 99),
+          'carbonWater': Mock.Random.integer(1, 99),
+          'creatorId': '@increment',
+          'creatorName': '@cname',
+          'createTime': Mock.Random.datetime(TIME_FORMAT)
         }
-
       })
 
       return {
         result: 1,
         total: TOTAL,
         data,
-        message: "查询成功"
+        message: '查询成功'
       }
     }
   },
@@ -57,7 +54,6 @@ module.exports = [
     url: '/Admin/DICT/foodAdd',
     type: 'post',
     response: () => {
-
       return {
         result: 1,
         message: 'success'
@@ -70,9 +66,8 @@ module.exports = [
     url: '/Admin/DICT/foodDel',
     type: 'post',
     response: ({ body }) => {
-
       const { id } = body
-      
+
       if (!id) {
         return {
           result: 0,
@@ -84,7 +79,6 @@ module.exports = [
         result: 1,
         message: 'success'
       }
-
     }
   },
 
@@ -94,7 +88,7 @@ module.exports = [
     type: 'post',
     response: ({ body }) => {
       const { id } = body
-      
+
       if (!id) {
         return {
           result: 0,
@@ -104,17 +98,17 @@ module.exports = [
       return {
         result: 1,
         data: {
-          "id": "@increment",
-          "name": "@cname",
-          "categoryId": Mock.Random.integer(1, 99),
-          "unit": 'g',
-          "heat": Mock.Random.integer(1, 99),
-          "protein": Mock.Random.integer(1, 99),
-          "fat": Mock.Random.integer(1, 99),
-          "carbonWater": Mock.Random.integer(1, 99),
-          "creatorId": "@increment",
-          "creatorName": "@cname",
-          "createTime": Mock.Random.datetime(TIME_FORMAT),
+          'id': '@increment',
+          'name': '@cname',
+          'categoryId': Mock.Random.integer(1, 99),
+          'unit': 'g',
+          'heat': Mock.Random.integer(1, 99),
+          'protein': Mock.Random.integer(1, 99),
+          'fat': Mock.Random.integer(1, 99),
+          'carbonWater': Mock.Random.integer(1, 99),
+          'creatorId': '@increment',
+          'creatorName': '@cname',
+          'createTime': Mock.Random.datetime(TIME_FORMAT)
         },
         message: 'success'
       }
@@ -126,11 +120,10 @@ module.exports = [
     url: '/Admin/DICT/foodUpdate',
     type: 'post',
     response: () => {
-
       return {
         result: 1,
         message: 'success'
       }
     }
-  },
+  }
 ]
