@@ -24,7 +24,7 @@ module.exports = [
 
       let data = new Array(pageNum == LAST_PAGE ? 6 : pageSize).fill({}).map(item => {
 
-        const createTime = Math.ceil(Math.random() * 10) % 2 == 1 ? beginTime : endTime
+        const createTime = Math.ceil(Math.Random() * 10) % 2 == 1 ? beginTime : endTime
 
         return {
           ...item,
@@ -47,7 +47,7 @@ module.exports = [
           protein: Mock.Random.integer(1, 10),
           fat: Mock.Random.integer(1, 10),
           carbonWater: Mock.Random.integer(1, 10),
-          submitTime: Mock.random.datetime(TIME_FORMAT),
+          submitTime: Mock.Random.datetime(TIME_FORMAT),
         }
 
       })
@@ -85,13 +85,13 @@ module.exports = [
           "memberId": "@increment",
           "planName": "@ctitle",
           "mealType": i,
-          "submitTime": Mock.random.datetime(TIME_FORMAT),
-          "picUrl": Mock.random.image('100*100', 'skyblue'),
+          "submitTime": Mock.Random.datetime(TIME_FORMAT),
+          "picUrl": Mock.Random.image('100*100', 'skyblue'),
           "dayNum": '@integer(1, 10)',
           "dayCount": '@integer(1, 10)',
           "suggestTake": '@integer(1, 10)',
-          "describe|描述内容": Mock.random.cparagraph(1, 3),
-          "advice": Mock.random.cparagraph(1, 3),
+          "describe|描述内容": Mock.Random.cparagraph(1, 3),
+          "advice": Mock.Random.cparagraph(1, 3),
           "detailList": [
             {
               "id": "@increment",

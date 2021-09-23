@@ -22,7 +22,7 @@ module.exports = [
 
       let data = new Array(pageNum == LAST_PAGE ? 6 : pageSize).fill({}).map(item => {
 
-        const createTime = Math.ceil(Math.random() * 10) % 2 == 1 ? beginTime : endTime
+        const createTime = Math.ceil(Math.Random() * 10) % 2 == 1 ? beginTime : endTime
 
         return {
           ...item,
@@ -54,7 +54,7 @@ module.exports = [
       body
     }) => {
 
-      const result = Math.ceil(Math.random() * 10) % 3 == 0 ? 0 : 1
+      const result = Math.ceil(Math.Random() * 10) % 3 == 0 ? 0 : 1
 
       const {
         id = ''
@@ -178,42 +178,42 @@ module.exports = [
             "id": "1",
             "name": "谷类及薯类",
             "categoryType": true,
-            "createTime": Mock.random.datetime(TIME_FORMAT),
+            "createTime": Mock.Random.datetime(TIME_FORMAT),
             "isDelete": false
           },
           {
             "id": "2",
             "name": "动物性食物",
             "categoryType": true,
-            "createTime": Mock.random.datetime(TIME_FORMAT),
+            "createTime": Mock.Random.datetime(TIME_FORMAT),
             "isDelete": false
           },
           {
             "id": "3",
             "name": "豆类和坚果类",
             "categoryType": true,
-            "createTime": Mock.random.datetime(TIME_FORMAT),
+            "createTime": Mock.Random.datetime(TIME_FORMAT),
             "isDelete": false
           },
           {
             "id": "4",
             "name": "蔬菜、水果和菌藻类",
             "categoryType": true,
-            "createTime": Mock.random.datetime(TIME_FORMAT),
+            "createTime": Mock.Random.datetime(TIME_FORMAT),
             "isDelete": false
           },
           {
             "id": "5",
             "name": "纯能量食物",
             "categoryType": true,
-            "createTime": Mock.random.datetime(TIME_FORMAT),
+            "createTime": Mock.Random.datetime(TIME_FORMAT),
             "isDelete": false
           },
           {
             "id": "6",
             "name": "其他",
             "categoryType": true,
-            "createTime": Mock.random.datetime(TIME_FORMAT),
+            "createTime": Mock.Random.datetime(TIME_FORMAT),
             "isDelete": false
           }
         ],

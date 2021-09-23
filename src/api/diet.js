@@ -6,15 +6,19 @@ export const getPlanList = data => request({
   method: 'post'
 })
 
-export const deletePlan = params => request({
-  url: '/diet/plan/delete',
-  data: params,
-  method: 'delete'
-})
-
 /** 食物库 */
 export const getDishCategoryList = data => request({
   url: '/Admin/DICT/category-list',
   data,
   method: 'post'
 })
+
+/** * 食品库 start */
+
+export const getFoodList = data => request({
+  url: '/Admin/DICT/food-page',
+  data,
+  method: 'post'
+})
+
+/** * 食品库 end */
