@@ -1,4 +1,5 @@
 const Mock = require('mockjs')
+const TIME_FORMAT = 'yyyy-MM-dd hh:mm:ss'
 
 module.exports = [
   /** 饮食计划列表 */
@@ -29,7 +30,7 @@ module.exports = [
           planName: planName || '@title(1, 3)',
           dayCount: Mock.Random.integer(1, 99),
           creatorName: creatorName || Mock.Random.cname(),
-          createTime: createTime || Mock.Random.datetime('yyyy-MM-dd hh:mm:ss'),
+          createTime: createTime || Mock.Random.datetime(TIME_FORMAT),
           receiveNums: Mock.Random.integer(1, 10)
         }
 
@@ -66,7 +67,7 @@ module.exports = [
     }
   },
 
-  /** 新增 */
+  /** 新增饮食计划 */
   {
     response: ({
       body
@@ -106,6 +107,73 @@ module.exports = [
         message: '新增成功'
       }
 
+    }
+  },
+
+  /** 食物分类下拉 */
+  {
+    url: '/Admin/DICT/category-list',
+    type: 'post',
+    response: ({ body }) => {
+
+      const { categoryType } = body
+
+      if (categoryType != 1) {
+        return {
+          result: 0,
+          data: [],
+          message: 'categoryType目前只能等于1'
+        }
+      }
+
+      return {
+        result: 1,
+        data: [
+          {
+            "id": "1",
+            "name": "谷类及薯类",
+            "categoryType": true,
+            "createTime": Mock.random.datetime(TIME_FORMAT),
+            "isDelete": false
+          },
+          {
+            "id": "2",
+            "name": "动物性食物",
+            "categoryType": true,
+            "createTime": Mock.random.datetime(TIME_FORMAT),
+            "isDelete": false
+          },
+          {
+            "id": "3",
+            "name": "豆类和坚果类",
+            "categoryType": true,
+            "createTime": Mock.random.datetime(TIME_FORMAT),
+            "isDelete": false
+          },
+          {
+            "id": "4",
+            "name": "蔬菜、水果和菌藻类",
+            "categoryType": true,
+            "createTime": Mock.random.datetime(TIME_FORMAT),
+            "isDelete": false
+          },
+          {
+            "id": "5",
+            "name": "纯能量食物",
+            "categoryType": true,
+            "createTime": Mock.random.datetime(TIME_FORMAT),
+            "isDelete": false
+          },
+          {
+            "id": "6",
+            "name": "其他",
+            "categoryType": true,
+            "createTime": Mock.random.datetime(TIME_FORMAT),
+            "isDelete": false
+          }
+        ],
+        message: '成功'
+      }
     }
   }
 ]
