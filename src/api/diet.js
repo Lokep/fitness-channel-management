@@ -6,10 +6,13 @@ export const getPlanList = data => request({
   method: 'post'
 })
 
-export const deletePlan = params => request({
-  url: '/diet/plan/delete',
-  data: params,
-  method: 'delete'
+/**
+ * 删除运动计划 @id{string}
+ */
+export const deletePlan = data => request({
+  url: '/Admin/Repository/del',
+  data,
+  method: 'post'
 })
 
 /** 食物库 */
@@ -18,3 +21,13 @@ export const getDishCategoryList = data => request({
   data,
   method: 'post'
 })
+
+/** * 食品库 start */
+
+export const getFoodList = data => request({
+  url: '/Admin/DICT/food-page',
+  data,
+  method: 'post'
+})
+
+/** * 食品库 end */
