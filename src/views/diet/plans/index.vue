@@ -393,7 +393,7 @@ export default {
           deletePlan({
             id
           }).then((res) => {
-            if (res.res === 0) {
+            if (res.result === 1) {
               this.$message.success('操作成功')
               this.getPlanList()
             }

@@ -12,7 +12,9 @@ module.exports = [
               {
                 id: '@increment',
                 name: () => Mock.Random.ctitle(5),
-                categoryType: '@increment'
+                categoryType: function() {
+                  return this.id
+                }
               }
             ]
           })

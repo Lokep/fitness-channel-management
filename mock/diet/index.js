@@ -64,13 +64,13 @@ module.exports = [
   //   }
   // },
   {
-    url: '/diet/plan/delete',
-    type: 'delete',
+    url: '/Admin/Repository/del',
+    type: 'post',
     response: ({ body, method, query }) => {
       const { id = '' } = body || {}
 
       return {
-        res: id ? 0 : 1,
+        result: id ? 1 : 0,
         msg: 'success'
       }
     }

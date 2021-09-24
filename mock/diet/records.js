@@ -21,9 +21,8 @@ module.exports = [
         planName
       } = body
 
-      let data = new Array(pageNum == LAST_PAGE ? 6 : pageSize).fill({}).map(item => {
-
-        const createTime = Math.ceil(Math.Random() * 10) % 2 == 1 ? beginTime : endTime
+      const data = new Array(pageNum === LAST_PAGE ? 6 : pageSize).fill({}).map(item => {
+        const createTime = Math.ceil(Math.Random() * 10) % 2 === 1 ? beginTime : endTime
 
         return {
           ...item,
@@ -32,7 +31,7 @@ module.exports = [
 
           dayCount: Mock.Random.integer(1, 99),
           dayNum: Mock.Random.integer(1, 99),
-
+          'mealType|1': [1, 2, 3, 4],
           isRecord: isRecord || '@integer(0, 1)',
 
           memberId: Mock.Random.integer(1, 100),
@@ -46,7 +45,7 @@ module.exports = [
           protein: Mock.Random.integer(1, 10),
           fat: Mock.Random.integer(1, 10),
           carbonWater: Mock.Random.integer(1, 10),
-          submitTime: Mock.Random.datetime(TIME_FORMAT),
+          submitTime: Mock.Random.datetime(TIME_FORMAT)
         }
       })
 
@@ -74,30 +73,26 @@ module.exports = [
         }
       }
 
-      const data = []
-
-      for (let i = 1; i <= 4; i++) {
-        data.push({
-          "id": "@increment",
-          "memberId": "@increment",
-          "planName": "@ctitle",
-          "mealType": i,
-          "submitTime": Mock.Random.datetime(TIME_FORMAT),
-          "picUrl": Mock.Random.image('100*100', 'skyblue'),
-          "dayNum": '@integer(1, 10)',
-          "dayCount": '@integer(1, 10)',
-          "suggestTake": '@integer(1, 10)',
-          "describe|描述内容": Mock.Random.cparagraph(1, 3),
-          "advice": Mock.Random.cparagraph(1, 3),
-          "detailList": [
-            {
-              'id': '@increment',
-              categoryId: '@increment',
-              foodId: '@increment',
-              nums: '@integer(1, 10)'
-            }
-          ]
-        })
+      const data = {
+        'id': '@increment',
+        'memberId': '@increment',
+        'planName': '@ctitle',
+        'mealType': '@integer(1, 10)',
+        'submitTime': Mock.Random.datetime(TIME_FORMAT),
+        'picUrl': Mock.Random.image('100*100', 'skyblue'),
+        'dayNum': '@integer(1, 10)',
+        'dayCount': '@integer(1, 10)',
+        'suggestTake': '@integer(1, 10)',
+        'describe': Mock.mock('@ctitle(50, 200)'),
+        'advice': Mock.Random.cparagraph(1, 3),
+        'detailList': [
+          {
+            'id': '@increment',
+            categoryId: '@increment',
+            foodId: '@increment',
+            nums: '@integer(1, 10)'
+          }
+        ]
       }
 
       return {
