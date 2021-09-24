@@ -5,3 +5,8 @@ export const getClockList = data => request({
   data,
   method: 'post'
 })
+export const getClockDetail = data => request({
+  url: '/Admin/Diet/clockGet',
+  data,
+  method: 'post'
+})
