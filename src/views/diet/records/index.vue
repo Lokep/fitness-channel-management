@@ -83,10 +83,10 @@
         <el-table-column align="center" prop="submitTime" label="提交时间" />
         <el-table-column align="center" prop="isRecord" label="记录状态" />
         <el-table-column align="center" label="操作">
-          <template>
+          <template slot-scope="{ row }">
             <div>
-              <el-button type="text" size="mini">记录</el-button>
-              <el-button type="text" size="mini">修改</el-button>
+              <el-button v-if="row.isRecord==0" type="text" size="mini">记录</el-button>
+              <el-button v-else type="text" size="mini">修改</el-button>
             </div>
           </template>
         </el-table-column>
