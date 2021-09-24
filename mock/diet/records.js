@@ -31,7 +31,7 @@ module.exports = [
 
           dayCount: Mock.Random.integer(1, 99),
           dayNum: Mock.Random.integer(1, 99),
-
+          'mealType|1':[1, 2, 3, 4],
           isRecord: isRecord || '@integer(0, 1)',
 
           memberId: Mock.Random.integer(1, 100),
@@ -45,7 +45,7 @@ module.exports = [
           protein: Mock.Random.integer(1, 10),
           fat: Mock.Random.integer(1, 10),
           carbonWater: Mock.Random.integer(1, 10),
-          submitTime: Mock.random.datetime(TIME_FORMAT)
+          submitTime: Mock.Random.datetime(TIME_FORMAT)
         }
       })
 
@@ -81,13 +81,13 @@ module.exports = [
           'memberId': '@increment',
           'planName': '@ctitle',
           'mealType': i,
-          'submitTime': Mock.random.datetime(TIME_FORMAT),
-          'picUrl': Mock.random.image('100*100', 'skyblue'),
+          'submitTime': Mock.Random.datetime(TIME_FORMAT),
+          'picUrl': Mock.Random.image('100*100', 'skyblue'),
           'dayNum': '@integer(1, 10)',
           'dayCount': '@integer(1, 10)',
           'suggestTake': '@integer(1, 10)',
-          'describe|描述内容': Mock.random.cparagraph(1, 3),
-          'advice': Mock.random.cparagraph(1, 3),
+          'describe|描述内容': Mock.Random.cparagraph(1, 3),
+          'advice': Mock.Random.cparagraph(1, 3),
           'detailList': [
             {
               'id': '@increment',
