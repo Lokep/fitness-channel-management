@@ -244,6 +244,7 @@
 </template>
 
 <script>
+import user from '@/mixin/user'
 import { parseTime } from '@/utils'
 import { getClockList, getClockDetail } from '@/api/records'
 import { getFoodCategorytList, getFoodSelectList } from '@/api/food'
@@ -264,6 +265,7 @@ export default {
       }
     }
   },
+  mixins: [user],
   data() {
     return {
       dialogVisible: false,
