@@ -3,7 +3,9 @@ const user = {
   computed: {
     ...mapGetters({
       creatorName: 'name',
-      creatorId: 'token'
+      creatorId: 'token',
+      editorName: 'name',
+      editorId: 'token'
     })
   }
 }
