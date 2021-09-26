@@ -6,6 +6,15 @@ export const getPlanList = data => request({
   method: 'post'
 })
 
+/**
+ * 删除运动计划 @id{string}
+ */
+export const deletePlan = data => request({
+  url: '/Admin/Repository/del',
+  data,
+  method: 'post'
+})
+
 /** 食物库 */
 export const getDishCategoryList = data => request({
   url: '/Admin/DICT/category-list',

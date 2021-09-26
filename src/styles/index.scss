@@ -220,3 +220,18 @@ aside {
 .multiselect--active {
   z-index: 1000 !important;
 }
+*[error-computed = "true"],
+.error-computed {
+  input {
+    border: 1px solid #f56c6c!important;
+    &:hover,&:focus,&:active{
+      border: 1px solid #f56c6c!important;
+    }
+  }
+}
+input.error-computed {
+  border: 1px solid #f56c6c!important;
+  &:hover,&:focus,&:active{
+    border: 1px solid #f56c6c!important;
+  }
+}

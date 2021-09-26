@@ -50,8 +50,12 @@ module.exports = [
     response: ({
       body
     }) => {
+<<<<<<< HEAD
 
       const result = Math.ceil(Math.random() * 10) % 3 == 0 ? 0 : 1
+=======
+      const result = Math.ceil(Math.random() * 10) % 3 === 0 ? 0 : 1
+>>>>>>> 8e91882211cbeb21bb473ee5340e6ad97b9dc689
 
       const {
         id = ''
@@ -166,46 +170,46 @@ module.exports = [
         result: 1,
         data: [
           {
-            "id": "1",
-            "name": "谷类及薯类",
-            "categoryType": true,
-            "createTime": Mock.Random.datetime(TIME_FORMAT),
-            "isDelete": false
+            'id': '1',
+            'name': '谷类及薯类',
+            'categoryType': true,
+            'createTime': Mock.Random.datetime(TIME_FORMAT),
+            'isDelete': false
           },
           {
-            "id": "2",
-            "name": "动物性食物",
-            "categoryType": true,
-            "createTime": Mock.Random.datetime(TIME_FORMAT),
-            "isDelete": false
+            'id': '2',
+            'name': '动物性食物',
+            'categoryType': true,
+            'createTime': Mock.Random.datetime(TIME_FORMAT),
+            'isDelete': false
           },
           {
-            "id": "3",
-            "name": "豆类和坚果类",
-            "categoryType": true,
-            "createTime": Mock.Random.datetime(TIME_FORMAT),
-            "isDelete": false
+            'id': '3',
+            'name': '豆类和坚果类',
+            'categoryType': true,
+            'createTime': Mock.Random.datetime(TIME_FORMAT),
+            'isDelete': false
           },
           {
-            "id": "4",
-            "name": "蔬菜、水果和菌藻类",
-            "categoryType": true,
-            "createTime": Mock.Random.datetime(TIME_FORMAT),
-            "isDelete": false
+            'id': '4',
+            'name': '蔬菜、水果和菌藻类',
+            'categoryType': true,
+            'createTime': Mock.Random.datetime(TIME_FORMAT),
+            'isDelete': false
           },
           {
-            "id": "5",
-            "name": "纯能量食物",
-            "categoryType": true,
-            "createTime": Mock.Random.datetime(TIME_FORMAT),
-            "isDelete": false
+            'id': '5',
+            'name': '纯能量食物',
+            'categoryType': true,
+            'createTime': Mock.Random.datetime(TIME_FORMAT),
+            'isDelete': false
           },
           {
-            "id": "6",
-            "name": "其他",
-            "categoryType": true,
-            "createTime": Mock.Random.datetime(TIME_FORMAT),
-            "isDelete": false
+            'id': '6',
+            'name': '其他',
+            'categoryType': true,
+            'createTime': Mock.Random.datetime(TIME_FORMAT),
+            'isDelete': false
           }
         ],
         message: '成功'

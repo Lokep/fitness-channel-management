@@ -12,7 +12,9 @@ module.exports = [
               {
                 id: '@increment',
                 name: () => Mock.Random.ctitle(5),
-                categoryType: '@increment'
+                categoryType: function() {
+                  return this.id
+                }
               }
             ]
           })
@@ -33,9 +35,10 @@ module.exports = [
               'list|10': [
                 {
                   id: '@increment',
+                  // 'id|1': [140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150],
                   name: () => Mock.Random.ctitle(5),
-                  'xx|1': ['条', '只', '杯', '头', '盘', '斤'],
-                  categoryId: 1,
+                  'unit|1': ['条', '只', '杯', '头', '盘', '斤'],
+                  categoryId: '@increment',
                   heat: '@integer(1, 3)',
                   protein: '@integer(1, 3)',
                   fat: '@integer(1, 3)',
