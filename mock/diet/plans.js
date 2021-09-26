@@ -50,12 +50,8 @@ module.exports = [
     response: ({
       body
     }) => {
-<<<<<<< HEAD
 
       const result = Math.ceil(Math.random() * 10) % 3 == 0 ? 0 : 1
-=======
-      const result = Math.ceil(Math.random() * 10) % 3 === 0 ? 0 : 1
->>>>>>> 8e91882211cbeb21bb473ee5340e6ad97b9dc689
 
       const {
         id = ''
