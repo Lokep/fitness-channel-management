@@ -200,7 +200,7 @@
           <span>
             <section v-for="(item, index) in detail.detailList" :key="index">
               <div class="dialog-item">
-                <el-select v-model="item.categoryId" class="flex-1" :class="{'error-computed':errorComputed(item.categoryId)}" @change="foodCategoryChange($event)">
+                <el-select v-model="item.categoryId" class="flex-1" :disabled="disabled" :class="{'error-computed':errorComputed(item.categoryId)}" @change="foodCategoryChange($event)">
                   <el-option
                     v-for="categoryItem in categorytList"
                     :key="categoryItem.id"
@@ -208,7 +208,7 @@
                     :value="categoryItem.id"
                   />
                 </el-select>
-                <el-select v-model="item.foodId" class="ml-5 flex-1" :class="{'error-computed':errorComputed(item.foodId)}">
+                <el-select v-model="item.foodId" class="ml-5 flex-1" :disabled="disabled" :class="{'error-computed':errorComputed(item.foodId)}">
                   <el-option
                     v-for="categoryItem in foodList"
                     :key="categoryItem.id"
@@ -216,10 +216,10 @@
                     :value="categoryItem.id"
                   />
                 </el-select>
-                <el-input v-model.number="item.num" type="number" class="ml-5 flex-1" :class="{'error-computed':errorComputed(item.num)}" />
+                <el-input v-model.number="item.nums" :disabled="disabled" type="number" class="ml-5 flex-1" :class="{'error-computed':errorComputed(item.nums)}" />
                 <div class="pl-5 pr-5">个</div>
                 <!-- <i class="el-icon-circle-plus dialog-form__el" /> -->
-                <i class="el-icon-error dialog-form__el ml-5" @click="deleteHandle(index)" />
+                <i v-if="!disabled" class="el-icon-error dialog-form__el ml-5" @click="deleteHandle(index)" />
               </div>
               <div class="text">
                 热量：0 千卡
@@ -228,16 +228,16 @@
                 碳水：0.7 克
               </div>
             </section>
-            <el-button plain type="primary" @click="addHandle">新增记录</el-button>
+            <el-button v-if="!disabled" plain type="primary" @click="addHandle">新增记录</el-button>
           </span>
         </div>
         <div class="grid-content bg-purple-dark pt-5 pb-5 ">
-          <div class="fl label">饮食建议:</div> <el-input v-model="detail.suggestTake" type="textarea" placeholder="300字以内" maxlength="300" show-word-limit />
+          <div class="fl label">饮食建议:</div> <el-input v-model="detail.suggestTake" :disabled="disabled" type="textarea" placeholder="300字以内" maxlength="300" show-word-limit />
         </div>
       </el-row>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">记录</el-button>
+        <el-button type="primary" @click="submitHandle">记录</el-button>
       </span>
     </el-dialog>
   </div>
@@ -253,12 +253,16 @@ export default {
     mealTypeParse(e) {
       switch (e) {
         case 1:
+        case '1':
           return '早餐'
         case 2:
+        case '2':
           return '午餐'
         case 3:
+        case '3':
           return '晚餐'
         case 4:
+        case '4':
           return '加餐'
         default:
           return '————'
@@ -269,6 +273,8 @@ export default {
   data() {
     return {
       dialogVisible: false,
+      readonly: true,
+      disabled: true,
       /* 饮食打卡列表参数 */
       searchQuery: {
         beginTime: '',
@@ -364,17 +370,21 @@ export default {
     },
     /* 食物下拉列表 */
     getFoodSelectList(categoryId) {
-      console.log(123)
       getFoodSelectList({ categoryId }).then(res => {
         this.foodList = res.data.list
       })
     },
+    /* 添加摄入记录 */
     addHandle() {
-      const item = { num: 0, categoryId: '', foodId: '' }
+      const item = { nums: 0, categoryId: '', foodId: '' }
       this.detail.detailList.push(item)
     },
+    /* 删除摄入记录 */
     deleteHandle(index) {
       this.detail.detailList.splice(index, 1)
+    },
+    submitHandle() {
+      this.dialogVisible = false
     }
   }
 }

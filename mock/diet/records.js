@@ -77,7 +77,7 @@ module.exports = [
         'id': '@increment',
         'memberId': '@increment',
         'planName': '@ctitle',
-        'mealType': '@integer(1, 10)',
+        'mealType|1': [1, 2, 3, 4],
         'submitTime': Mock.Random.datetime(TIME_FORMAT),
         'picUrl': Mock.Random.image('100*100', 'skyblue'),
         'dayNum': '@integer(1, 10)',
