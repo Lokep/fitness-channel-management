@@ -7,6 +7,7 @@ const article = require('./article')
 // const search = require('./remote-search')
 const diet = require('./diet/index')
 const food = require('./food/index')
+const fitness = require('./fitness/index')
 const sportsPlan = require('./sports-plan')
 
 const COLOR = {
@@ -23,6 +24,7 @@ const mocks = [
   // ...search,
   ...diet,
   ...food,
+  ...fitness,
   ...sportsPlan
 ]
 
