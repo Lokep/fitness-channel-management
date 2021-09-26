@@ -28,3 +28,9 @@ export const getSportsPlanDetail = data => request({
   data,
   method: 'post'
 })
+/* 健身运动编辑 */
+export const updateSportsPlanDetail = data => request({
+  url: '/Admin/Motion/planUpdate',
+  data,
+  method: 'post'
+})
