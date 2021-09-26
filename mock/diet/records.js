@@ -91,6 +91,36 @@ module.exports = [
             categoryId: '@increment',
             foodId: '@increment',
             nums: '@integer(1, 10)'
+          },
+          {
+            'id': '@increment',
+            categoryId: '@increment',
+            foodId: '@increment',
+            nums: '@integer(1, 10)'
+          },
+          {
+            'id': '@increment',
+            categoryId: '@increment',
+            foodId: '@increment',
+            nums: '@integer(1, 10)'
+          },
+          {
+            'id': '@increment',
+            categoryId: '@increment',
+            foodId: '@increment',
+            nums: '@integer(1, 10)'
+          },
+          {
+            'id': '@increment',
+            categoryId: '@increment',
+            foodId: '@increment',
+            nums: '@integer(1, 10)'
+          },
+          {
+            'id': '@increment',
+            categoryId: '@increment',
+            foodId: '@increment',
+            nums: '@integer(1, 10)'
           }
         ]
       }

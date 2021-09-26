@@ -200,7 +200,7 @@
           <span>
             <section v-for="(item, index) in detail.detailList" :key="index">
               <div class="dialog-item">
-                <el-select v-model="item.categoryId" class="flex-1" :disabled="disabled" :class="{'error-computed':errorComputed(item.categoryId)}" @change="foodCategoryChange($event)">
+                <el-select v-model="item.categoryId" class="flex-1" :disabled="disabled" :class="{'error-computed':errorComputed(item.categoryId)}" @change="foodCategoryChange($event,index)">
                   <el-option
                     v-for="categoryItem in categorytList"
                     :key="categoryItem.id"
@@ -210,29 +210,29 @@
                 </el-select>
                 <el-select v-model="item.foodId" class="ml-5 flex-1" :disabled="disabled" :class="{'error-computed':errorComputed(item.foodId)}">
                   <el-option
-                    v-for="categoryItem in foodList"
+                    v-for="categoryItem in foodCheckedComputed(index)"
                     :key="categoryItem.id"
                     :label="categoryItem.name"
                     :value="categoryItem.id"
                   />
                 </el-select>
                 <el-input v-model.number="item.nums" :disabled="disabled" type="number" class="ml-5 flex-1" :class="{'error-computed':errorComputed(item.nums)}" />
-                <div class="pl-5 pr-5">个</div>
+                <div class="pl-5 pr-5">{{ unitComputed(foodDetailList[index]) }}</div>
                 <!-- <i class="el-icon-circle-plus dialog-form__el" /> -->
                 <i v-if="!disabled" class="el-icon-error dialog-form__el ml-5" @click="deleteHandle(index)" />
               </div>
               <div class="text">
-                热量：0 千卡
-                蛋白：0.0 克
-                脂肪：0.0 克
-                碳水：0.7 克
+                热量：{{ intakeComputed(index, item, 'heat') }} 千卡
+                蛋白：{{ intakeComputed(index, item, 'protein') }} 克
+                脂肪：{{ intakeComputed(index, item, 'fat') }} 克
+                碳水：{{ intakeComputed(index, item, 'carbonWater') }} 克
               </div>
             </section>
             <el-button v-if="!disabled" plain type="primary" @click="addHandle">新增记录</el-button>
           </span>
         </div>
         <div class="grid-content bg-purple-dark pt-5 pb-5 ">
-          <div class="fl label">饮食建议:</div> <el-input v-model="detail.suggestTake" :disabled="disabled" type="textarea" placeholder="300字以内" maxlength="300" show-word-limit />
+          <div class="fl label">饮食建议:</div> <el-input v-model="detail.advice" :disabled="disabled" type="textarea" placeholder="300字以内" maxlength="300" show-word-limit />
         </div>
       </el-row>
       <span slot="footer" class="dialog-footer">
@@ -246,7 +246,7 @@
 <script>
 import user from '@/mixin/user'
 import { parseTime } from '@/utils'
-import { getClockList, getClockDetail } from '@/api/records'
+import { getClockList, getClockDetail, UpdateClockDetail } from '@/api/records'
 import { getFoodCategorytList, getFoodSelectList } from '@/api/food'
 export default {
   filters: {
@@ -308,11 +308,37 @@ export default {
       /* 食物分类下拉 */
       categorytList: [],
       /* 食物下拉列表 */
-      foodList: []
+      foodList: [],
+      foodCheckedList: [],
+      foodDetailList: []
 
     }
   },
   computed: {
+    /* 摄入计算 */
+    foodCheckedComputed: function() {
+      /* mock 时可能没有找到 foodid 会显示0 */
+      return (index) => {
+        return this.foodCheckedList[index] || {}
+      }
+    },
+    /* 摄入计算 */
+    intakeComputed: function() {
+      /* mock 时可能没有找到 foodid 会显示0 */
+      return (index, item, key) => {
+        const one = this.foodDetailList[index]
+        if (one?.[key] && item?.nums) return (+one[key] * +item?.nums).toFixed(2)
+        return 0
+      }
+    },
+    /* 单位 */
+    unitComputed: function() {
+      return (e) => {
+        if (e?.unit) return e.unit
+        return '个'
+      }
+    },
+    /* 红色显示 */
     errorComputed: function() {
       return (e) => {
         if (e === 0 || e === '0' || e === '' || e == null) return true
@@ -352,8 +378,11 @@ export default {
     /* 食物打卡详情 */
     getClockDetail(id) {
       this.dialogVisible = true
+      this.disabled = false
       getClockDetail({ id }).then(res => {
         this.detail = res.data
+        /* 遍历获取摄入数据 */
+        this.getfoodDetail()
       })
     },
     /* 食物分类 */
@@ -365,26 +394,116 @@ export default {
       })
     },
     /* 食物分类下拉改变时,ps: 应该要加参数 */
-    foodCategoryChange(value) {
-      this.getFoodSelectList(value)
+    foodCategoryChange(value, index) {
+      this.getFoodSelectList(value, index)
     },
     /* 食物下拉列表 */
-    getFoodSelectList(categoryId) {
+    getFoodSelectList(categoryId, index) {
       getFoodSelectList({ categoryId }).then(res => {
         this.foodList = res.data.list
+        this.$set(this.foodCheckedList, index, res.data.list)
       })
     },
     /* 添加摄入记录 */
     addHandle() {
+      // foodDetail
+      /* {
+        "id|主键": null,
+        "name|名称": null,
+        "unit|单位)": null,
+        "categoryId|分类id": null,
+        "heat|热量": null,
+        "protein|蛋白质": null,
+        "fat|脂肪": null,
+        "carbonWater|碳水": null,
+        } */
       const item = { nums: 0, categoryId: '', foodId: '' }
       this.detail.detailList.push(item)
+      const foodDetai = {}
+      this.foodDetailList.push(foodDetai)
+    },
+    /* 循环获取食物碳水等详情 因为有分类id,那么直接查详情数据 */
+    getfoodDetail() {
+      this.foodDetailList = []
+      this.foodCheckedList = []
+      this.detail.detailList.forEach((item, index) => {
+        const categoryId = item.categoryId
+        const foodId = item.foodId
+        getFoodSelectList({ categoryId }).then(res => {
+          this.foodDetailList.push(res.data.list.find(item => item.id === foodId) || {})
+          this.foodCheckedList.push(res.data.list)
+        })
+      })
     },
     /* 删除摄入记录 */
     deleteHandle(index) {
       this.detail.detailList.splice(index, 1)
+      this.foodDetailList.splice(index, 1)
     },
     submitHandle() {
-      this.dialogVisible = false
+      /* {
+          "advice": "string",
+          "carbonWater": 0,
+          "createTime": "string",
+          "dayCount": 0,
+          "dayNum": 0,
+          "describe": "string",
+          "detailList": [
+            {
+              "categoryId": "string",
+              "foodId": "string",
+              "id": "string",
+              "nums": 0,
+              "recordId": "string"
+            }
+          ],
+          "editorId": "string",
+          "editorName": "string",
+          "fat": 0,
+          "heat": 0,
+          "id": "string",
+          "isRecord": 0,
+          "isSubmit": 0,
+          "mealType": 0,
+          "memberId": "string",
+          "memberName": "string",
+          "picUrl": "string",
+          "planId": "string",
+          "planName": "string",
+          "protein": 0,
+          "submitTime": "string",
+          "suggestTake": "string",
+          "updateTime": "string"
+        } */
+      const data = this.detail
+      /* 碳水 脂肪 热量 蛋白质 */
+      data.carbonWater = 0
+      data.fat = 0
+      data.heat = 0
+      data.protein = 0
+      this.foodDetailList.forEach((item, index) => {
+        const one = this.detail.detailList[index]
+        // console.log(one)
+        data.carbonWater += (+item?.carbonWater * +one.nums) || 0
+        data.fat += (+item?.fat * +one.nums) || 0
+        data.heat += (+item?.heat * +one.nums) || 0
+        data.protein += (+item?.protein * +one.nums) || 0
+      })
+      data.carbonWater = Number(data.carbonWater.toFixed(2))
+      data.fat = Number(data.fat.toFixed(2))
+      data.heat = Number(data.heat.toFixed(2))
+      data.protein = Number(data.protein.toFixed(2))
+      data.editorName = this.editorName
+      data.editorId = this.editorId
+      data.updateTime = parseTime(new Date())
+      // console.log(data)
+      // return
+
+      UpdateClockDetail(data).then(res => {
+        console.log(res)
+        this.$message.success('数据更新成功')
+        this.dialogVisible = false
+      })
     }
   }
 }
