@@ -56,9 +56,9 @@
         <el-table-column align="center" prop="createTime" label="创建时间" />
         <el-table-column align="center" prop="receiveNums" label="分发人次" />
         <el-table-column align="center" prop="" label="操作">
-          <template>
-            <el-button type="text" size="mini">编辑</el-button>
-            <el-button type="text" size="mini">删除</el-button>
+          <template slot-scope="{ row }">
+            <el-button type="text" size="mini" @click="edit(row.id)">编辑</el-button>
+            <el-button type="text" size="mini" @click="deleteHandle(row.id)">删除</el-button>
             <el-button type="text" size="mini">分发</el-button>
           </template>
         </el-table-column>
@@ -73,18 +73,115 @@
         />
       </div>
     </div>
+    <!-- 弹窗 -->
+    <el-dialog
+      title="编辑饮食计划"
+      :visible.sync="dialogVisible"
+      width="768px"
+      :append-to-body="true"
+      :close-on-click-modal="false"
+    >
+      <el-form ref="detail" :model="detail">
+        <el-form-item
+          label="计划名称"
+          label-width="100px"
+          prop="planName"
+          :rules="{
+            required: true, message: '不能为空', trigger: 'blur'
+          }"
+        >
+          <!-- 必填，1-20字，超出字数则不允许再输入 -->
+          <el-input
+            v-model="detail.planName"
+            size="mini"
+            autocomplete="off"
+            maxlength="20"
+            placeholder="请输入"
+          />
+        </el-form-item>
+        <DietPlanForm v-for="(item,index) in detail.ruleList" :key="index" class="mb-10">
+          <template slot="title">
+            <div>第{{ item.dayNum }}天</div>
+            <!-- <div>消耗热量：400 千卡</div> -->
+          </template>
+          <template slot="right">
+            <div class="flex">
+              <i class="el-icon-circle-plus dialog-form__el cursor" @click="addItem" />
+              <i v-if="index > 0" class="el-icon-error dialog-form__el cursor" @click="delItemHandle(index)" />
+            </div>
+          </template>
+          <div>
+            <el-form-item
+              label="打卡内容:"
+              label-width="100px"
+              :prop="'ruleList.' + index + '.content'"
+              :rules="{
+                required: true, message: '不能为空', trigger: 'blur'
+              }"
+            >
+              <el-input
+                v-model="item.content"
+                size="mini"
+                autocomplete="off"
+                placeholder="请输入"
+              />
+            </el-form-item>
+            <el-form-item
+              label="建议消耗:"
+              label-width="100px"
+              :prop="'ruleList.' + index + '.recommendConsume'"
+              :rules="{
+                required: true, message: '不能为空', trigger: 'blur'
+              }"
+            >
+              <el-input
+                v-model="item.recommendConsume"
+                size="mini"
+                autocomplete="off"
+                placeholder="请输入"
+              />
+              千卡
+            </el-form-item>
+            <el-form-item
+              label="运动建议:"
+              label-width="100px"
+              :prop="'ruleList.' + index + '.advice'"
+              :rules="{
+                required: true, message: '不能为空', trigger: 'blur'
+              }"
+            >
+              <el-input
+                v-model="item.advice"
+                size="mini"
+                autocomplete="off"
+                type="textarea"
+                placeholder="请输入"
+              />
+            </el-form-item>
+          </div>
+        </DietPlanForm>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="submitHandle">记录</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import user from '@/mixin/user'
 import { parseTime } from '@/utils'
-import { addPlan, getSportsPlanList } from '@/api/fitness'
-
+import { addPlan, getSportsPlanList, deleteSportsPlan, getSportsPlanDetail } from '@/api/fitness'
+import DietPlanForm from '@/views/diet/components/diet-plan-form.vue'
 export default {
+  components: {
+    DietPlanForm
+  },
   mixins: [user],
   data() {
     return {
+      dialogVisible: false,
       total: 10,
       sportsPlanList: [],
       searchQuery: {
@@ -94,6 +191,21 @@ export default {
         creatorName: '',
         pageNum: 1,
         pageSize: 10
+      },
+      /* 健身运动详情 */
+      detail: {
+        id: '',
+        planName: '',
+        dayCount: '',
+        ruleList: []
+      }
+    }
+  },
+  computed: {
+    formValidate: function() {
+      /* mock 时可能没有找到 foodid 会显示0 */
+      return (index) => {
+        return this.detail.ruleList[index] || {}
       }
     }
   },
@@ -116,12 +228,57 @@ export default {
     this.getSportsPlanList()
   },
   methods: {
+    addItem() {
+
+    },
+    delItemHandle(index) {
+      this.$confirm('你确定要删除这条数据吗？', '提示', { type: 'warning' }).then(res => {
+        // const ruleList = this.detail.ruleList
+        // delete this.detail.ruleList
+        // ruleList.splice(index, 1)
+        // this.detail.ruleList = ruleList
+        this.detail.ruleList.splice(index, 1)
+      })
+    },
+    /* 编辑提交 */
+    submitHandle() {
+      this.$refs['detail'].validate((valid) => {
+        if (valid) {
+          alert('submit!')
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
+    /* 编辑获取详情 */
+    edit(id) {
+      getSportsPlanDetail({
+        id
+      }).then(res => {
+        this.detail = res.data
+        this.dialogVisible = true
+        // console.log(res)
+      })
+    },
+    /* 删除列表 */
+    deleteHandle(id) {
+      this.$confirm('你确定要删除这条数据吗？', '提示', { type: 'warning' }).then(res => {
+        deleteSportsPlan({ id }).then(res => {
+          this.$message({
+            type: 'success',
+            message: '删除成功'
+          })
+          this.getSportsPlanList()
+        })
+      })
+    },
     /* 运动计划列表 */
     getSportsPlanList() {
       const searchQuery = this.searchQuery
-      getSportsPlanList({ searchQuery }).then(res => {
-        this.sportsPlanList = res.data.list
-        this.total = res.data.total
+      getSportsPlanList({ ...searchQuery }).then(res => {
+        this.sportsPlanList = res.data
+        this.total = res.total
       })
     },
     /*  */
@@ -154,3 +311,20 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+::v-deep .el-input,
+.el-textarea{
+  width: 300px;
+}
+.el-icon-circle-plus {
+  line-height: 48rpx;
+}
+.el-icon-error {
+  color: #f56c6c;
+}
+.el-icon-error,
+.el-icon-circle-plus {
+  font-size: 30px;
+  line-height: 48px;
+}
+</style>
