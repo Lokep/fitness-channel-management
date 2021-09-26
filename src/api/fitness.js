@@ -34,3 +34,15 @@ export const updateSportsPlanDetail = data => request({
   data,
   method: 'post'
 })
+/* 获取会员列表，位置不对，后续合并 */
+export const getVipList = data => request({
+  url: '/Admin/Member/list',
+  data,
+  method: 'post'
+})
+/* 运动计划分发 */
+export const planDistribute = data => request({
+  url: '/Admin/Repository/planDistribute',
+  data,
+  method: 'post'
+})

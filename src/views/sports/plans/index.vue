@@ -59,7 +59,7 @@
           <template slot-scope="{ row , $index}">
             <el-button type="text" size="mini" @click="edit(row.id, $index)">编辑</el-button>
             <el-button type="text" size="mini" @click="deleteHandle(row.id)">删除</el-button>
-            <el-button type="text" size="mini">分发</el-button>
+            <el-button type="text" size="mini" @click="distribute(row.id)">分发</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -168,13 +168,58 @@
         <el-button type="primary" @click="submitHandle">记录</el-button>
       </span>
     </el-dialog>
+    <!-- 分发 -->
+    <el-dialog
+      title="分配用户"
+      :visible.sync="dialogVisible2"
+      width="768px"
+      :append-to-body="true"
+      :close-on-click-modal="false"
+    >
+      <el-table
+        ref="multipleTable"
+        :data="tableData"
+        tooltip-effect="dark"
+        style="width: 100%"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column
+          type="selection"
+          label="全选"
+          width="55"
+        />
+        <el-table-column
+          prop="wechatName"
+          label="微信名称"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="name"
+          label="用户名称"
+        />
+        <el-table-column
+          prop="address"
+          sex="性别"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="birth"
+          label="出生日期"
+          show-overflow-tooltip
+        />
+      </el-table>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible2 = false">取消</el-button>
+        <el-button type="primary" @click="planDistribute">分发</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import user from '@/mixin/user'
 import { parseTime } from '@/utils'
-import { addPlan, getSportsPlanList, deleteSportsPlan, getSportsPlanDetail, updateSportsPlanDetail } from '@/api/fitness'
+import { getVipList, planDistribute, addPlan, getSportsPlanList, deleteSportsPlan, getSportsPlanDetail, updateSportsPlanDetail } from '@/api/fitness'
 import DietPlanForm from '@/views/diet/components/diet-plan-form.vue'
 export default {
   components: {
@@ -184,6 +229,7 @@ export default {
   data() {
     return {
       dialogVisible: false,
+      dialogVisible2: false,
       total: 10,
       sportsPlanList: [],
       searchQuery: {
@@ -200,7 +246,10 @@ export default {
         planName: '',
         dayCount: '',
         ruleList: []
-      }
+      },
+      multipleSelection: [],
+      tableData: [],
+      planId: ''
     }
   },
   computed: {
@@ -230,6 +279,39 @@ export default {
     this.getSportsPlanList()
   },
   methods: {
+    planDistribute() {
+      const memberList = []
+      this.multipleSelection.forEach(item => {
+        memberList.push(item.id)
+      })
+      planDistribute({
+        memberList,
+        planId: this.planId
+      }).then(res => {
+        console.log(res)
+        // this.dialogVisible2 = false
+      })
+    },
+    distribute(id) {
+      getVipList().then(res => {
+        /* 会员列表 */
+        this.tableData = res.data
+        this.dialogVisible2 = true
+        this.planId = id
+      })
+    },
+    toggleSelection(rows) {
+      if (rows) {
+        rows.forEach(row => {
+          this.$refs.multipleTable.toggleRowSelection(row)
+        })
+      } else {
+        this.$refs.multipleTable.clearSelection()
+      }
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+    },
     addItem() {
       const options = {
         advice: '',
