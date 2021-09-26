@@ -57,7 +57,7 @@
           size="mini"
           type="primary"
           icon="el-icon-plus"
-          @click="addSportsPlan"
+          @click="showEditBox"
         >新建</el-button>
       </div>
     </div>
@@ -89,7 +89,7 @@
             <el-button
               type="text"
               size="mini"
-              @click="transmit(row)"
+              @click="showTransmit(row)"
             >分发</el-button>
           </template>
         </el-table-column>
@@ -105,6 +105,7 @@
       </div>
     </div>
 
+    <!-- 编辑与查看 -->
     <el-dialog
       :title="isEdit ? '编辑计划' : '查看计划'"
       :visible.sync="isShowPlan"
@@ -136,25 +137,97 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <template v-if="isEdit">
-          <el-button size="mini" @click="isEdit = false, isShowPlan = false">取 消</el-button>
-          <el-button size="mini" type="primary" @click="dialogVisible = false">确 定</el-button>
+          <el-button size="mini" @click="handleClose">取 消</el-button>
+          <el-button size="mini" type="primary" @click="handleEdit">确 定</el-button>
         </template>
         <template v-else>
-          <el-button size="mini" @click="isEdit = false, isShowPlan = false">关闭</el-button>
+          <el-button size="mini" @click="handleClose">关闭</el-button>
         </template>
+      </span>
+    </el-dialog>
+
+    <!-- 新增计划 -->
+    <el-dialog
+      title="新增计划"
+      :visible.sync="isShowAdd"
+      width="40%"
+    >
+      <div>
+
+        <el-row class="mb-10">
+          <el-col :span="6">标题：</el-col>
+          <el-col :span="18">
+            <el-input v-model="currentPlan.title" size="mini" />
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="6">详细内容：</el-col>
+          <el-col :span="18">
+            <el-input v-model="currentPlan.content" size="mini" type="textarea" maxlength="1000" rows="5" resize="false" />
+          </el-col>
+        </el-row>
+
+      </div>
+      <span slot="footer" class="dialog-footer">
+
+        <el-button size="mini" @click="handleClose">取 消</el-button>
+        <el-button size="mini" type="primary" @click="addSportsPlan">确 定</el-button>
+
+      </span>
+    </el-dialog>
+
+    <!-- 下发计划 -->
+    <el-dialog
+      title="分配用户"
+      :visible.sync="isTransmit"
+      width="60%"
+    >
+      <div>
+
+        <el-table
+          class="mb-10"
+          :data="memberList"
+          border
+          size="mini"
+          @selection-change="handleSelectionChange"
+        >
+          <el-table-column align="center" type="selection" />
+          <el-table-column align="center" prop="wechatName" label="微信昵称" />
+          <el-table-column align="center" prop="name" label="姓名" />
+          <el-table-column align="center" prop="sex" label="性别">
+            <template slot-scope="{row}">
+              {{ row.sex ? '男' : '女' }}
+            </template>
+          </el-table-column>
+          <el-table-column align="center" prop="birth" label="出生日期" />
+        </el-table>
+        <el-pagination
+          hide-on-single-page
+          background
+          layout="prev, pager, next"
+          :total="member.total"
+        />
+      </div>
+      <span slot="footer" class="dialog-footer">
+
+        <el-button size="mini" @click="handleClose">取 消</el-button>
+        <el-button size="mini" type="primary" @click="transmit">确 定</el-button>
+
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getSportsPlanList, getMemberList, deletePlan, transmitPlan } from '@/api/sports-plan'
+import { getSportsPlanList, getMemberList, deletePlan, transmitPlan, addSportsPlan, updateSportsPlan } from '@/api/sports-plan'
 export default {
   data() {
     return {
       date: [],
-      isShowPlan: true,
+      isShowPlan: false,
+      isShowAdd: false,
       isEdit: false,
+      isTransmit: false,
       params: {
         beginTime: null,
         creatorName: null,
@@ -173,7 +246,8 @@ export default {
         wechatName: '',
         total: null
       },
-      memberList: []
+      memberList: [],
+      memberSelected: []
     }
   },
   created() {
@@ -181,15 +255,47 @@ export default {
     this.getMemberList()
   },
   methods: {
+    showEditBox() {
+      this.isShowAdd = true
+
+      this.currentPlan = {
+        title: '',
+        content: '',
+        creatorId: '1',
+        creatorName: 'Admin'
+      }
+    },
+
     addSportsPlan() {
-      // addSportsPlan
+      this.$confirm('是否确认新增该计划', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        addSportsPlan({
+          ...this.currentPlan
+        }).then(res => {
+          if (res.result === 1) {
+            this.handleSearch()
+            this.handleClose()
+            this.$message.success('新增成功')
+          }
+        })
+      }).catch(() => {})
+    },
+
+    handleClose() {
+      this.isShowAdd = false
+      this.currentPlan = {}
+      this.isEdit = false
+      this.isShowPlan = false
+      this.memberSelected = []
     },
 
     handleSearch() {
       this.getSportsPlanList(1)
     },
-    handleSearchByDate(e) {
-      console.log(e)
+    handleSearchByDate() {
       this.getSportsPlanList(1)
     },
 
@@ -217,6 +323,10 @@ export default {
       })
     },
 
+    handleSelectionChange(e) {
+      this.memberSelected = e
+    },
+
     preview(row) {
       this.currentPlan = row
       this.isShowPlan = true
@@ -227,6 +337,25 @@ export default {
       this.isShowPlan = true
       this.isEdit = true
     },
+
+    handleEdit() {
+      this.$confirm('是否确认更新该计划', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        updateSportsPlan({
+          ...this.currentPlan
+        }).then(res => {
+          if (res.result === 1) {
+            this.handleSearch()
+            this.handleClose()
+            this.$message.success('新增成功')
+          }
+        })
+      }).catch(() => {})
+    },
+
     deletePlan(row) {
       this.$confirm('此操作将删除该计划, 是否继续?', '提示', {
         confirmButtonText: '确定',
@@ -245,7 +374,14 @@ export default {
         })
       }).catch(() => {})
     },
-    transmit(row) {
+
+    showTransmit(row) {
+      this.isTransmit = true
+      this.currentPlan = row
+    },
+
+    transmit() {
+      const row = this.currentPlan
       this.$confirm('是否确认下发该计划?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -253,13 +389,15 @@ export default {
       }).then(() => {
         transmitPlan({
           planId: row.id,
-          memberList: this.memberList
+          memberList: this.memberSelected
         }).then(res => {
           if (res.result === 1) {
             this.$message({
               type: 'success',
               message: '下发成功!'
             })
+            this.handleClose()
+            this.handleSearch()
           }
         })
       }).catch(() => {})

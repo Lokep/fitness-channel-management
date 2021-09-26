@@ -10,6 +10,10 @@ const service = axios.create({
   timeout: 5000 // request timeout
 })
 
+// axios.defaults.headers = {
+//   "Content-Type": "application/x-www-form-urlencoded"
+// }
+
 // request interceptor
 service.interceptors.request.use(
   config => {
@@ -20,6 +24,7 @@ service.interceptors.request.use(
     }
     return {
       method: 'get',
+
       ...config
     }
   },
