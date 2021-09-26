@@ -220,6 +220,7 @@
 
 <script>
 import { getSportsPlanList, getMemberList, deletePlan, transmitPlan, addSportsPlan, updateSportsPlan } from '@/api/sports-plan'
+import * as dayjs from 'dayjs'
 export default {
   data() {
     return {
@@ -295,7 +296,10 @@ export default {
     handleSearch() {
       this.getSportsPlanList(1)
     },
-    handleSearchByDate() {
+    handleSearchByDate(e) {
+      const [beginTime, endTime] = e
+      this.params.beginTime = dayjs(beginTime).format('YYYY-MM-DD hh:mm:ss')
+      this.params.endTime = dayjs(endTime).format('YYYY-MM-DD hh:mm:ss')
       this.getSportsPlanList(1)
     },
 
