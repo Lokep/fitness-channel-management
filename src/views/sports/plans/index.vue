@@ -284,12 +284,23 @@ export default {
       this.multipleSelection.forEach(item => {
         memberList.push(item.id)
       })
+      if (memberList.length < 1) {
+        this.$message({
+          type: 'info',
+          message: '请选择分配用户'
+        })
+        return
+      }
       planDistribute({
         memberList,
         planId: this.planId
       }).then(res => {
-        console.log(res)
-        // this.dialogVisible2 = false
+        // console.log(res)
+        this.$message({
+          type: 'success',
+          message: '分发成功'
+        })
+        this.dialogVisible2 = false
       })
     },
     distribute(id) {
