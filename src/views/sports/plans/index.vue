@@ -43,6 +43,7 @@
           size="mini"
           type="primary"
           icon="el-icon-plus"
+          @click="addPlan"
         >新建</el-button>
       </div>
     </div>
@@ -228,6 +229,7 @@ export default {
   mixins: [user],
   data() {
     return {
+      isAdd: false,
       dialogVisible: false,
       dialogVisible2: false,
       total: 10,
@@ -244,7 +246,7 @@ export default {
       detail: {
         id: '',
         planName: '',
-        dayCount: '',
+        dayCount: 1,
         ruleList: []
       },
       multipleSelection: [],
@@ -341,16 +343,28 @@ export default {
         // ruleList.splice(index, 1)
         // this.detail.ruleList = ruleList
         this.detail.ruleList.splice(index, 1)
+        let dayNum = 1
+        this.detail.ruleList.forEach((item, index) => {
+          this.detail.ruleList[index].dayNum = dayNum
+          dayNum++
+        })
       })
     },
+
     /* 编辑提交 */
     submitHandle() {
       this.$refs['detail'].validate((valid) => {
         if (valid) {
-          const options = this.detail
-          updateSportsPlanDetail(options).then(res => {
+          /* 如果是添加走添加 */
+          if (this.isAdd) {
+            this.addHandle()
+          } else {
+            /* 否则是编辑 */
+            const options = this.detail
+            updateSportsPlanDetail(options).then(res => {
 
-          })
+            })
+          }
         } else {
           console.log('error submit!!')
           return false
@@ -359,6 +373,7 @@ export default {
     },
     /* 编辑获取详情 */
     edit(id, index) {
+      this.isAdd = false
       getSportsPlanDetail({
         id
       }).then(res => {
@@ -392,14 +407,24 @@ export default {
     },
     /*  */
     addPlan() {
-      return addPlan({
-        createTime: '2021-09-14T13:25:25.892Z',
-        creatorId: 'string',
-        creatorName: 'string',
-        dayCount: 0,
-        id: 'string',
+      this.detail = {
+        createTime: parseTime(new Date()),
+        creatorName: this.creatorName,
+        creatorId: this.creatorId,
+        // dayCount: 1,
+        // id: 115,
+        planName: '',
+        receiveNums: '',
+        ruleList: []
+      }
+      this.isAdd = true
+      this.dialogVisible = true
+      console.log(this.detail)
+      /* {
+        creatorId: this.creatorId,
+        // id: 'string',
         isDelete: 0,
-        planName: 'string',
+        planName: this.,
         receiveNums: 0,
         ruleList: [
           {
@@ -413,7 +438,16 @@ export default {
           }
         ],
         updateTime: '2021-09-14T13:25:25.892Z'
-      }).then(res => {
+      } */
+    },
+    addHandle() {
+      const _this = this
+      const options = Object.assign({
+        isDelete: 0,
+        dayCount: _this.detail.ruleList.length
+      },
+      this.detail)
+      addPlan(options).then(res => {
 
       })
     }
