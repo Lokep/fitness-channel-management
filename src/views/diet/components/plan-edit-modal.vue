@@ -20,13 +20,19 @@
         />
       </el-form-item>
 
-      <!--  -->
+      <!--
+        index 为 天 的索引
+        i 为 顿 的索引
+        idx 为某一种食物 的索引
+       -->
       <div class="flex dialog-form">
         <div class="dialog-form__el" style="flex: 1">
           <DietPlanForm
             v-for="(item, index) in form.ruleList"
             :key="index"
+            :name="index"
             class="mb-5"
+            @change="handleCollapseChange"
           >
             <template slot="title">
               <div>第{{ item.dayNum }}天 </div>
@@ -67,10 +73,11 @@
                         :value="el.categoryId"
                         size="mini"
                         autocomplete="off"
+                        @focus="e => cloneFoodCategoryList(index, i, idx)"
                         @change="e => foodCategoryChange(e, index, i, idx, 'categoryId')"
                       >
                         <el-option
-                          v-for="categoryItem in categorytList"
+                          v-for="categoryItem in categoryList[`${index}-${i}-${idx}`]"
                           :key="categoryItem.id"
                           :label="categoryItem.name"
                           :value="categoryItem.id"
@@ -82,10 +89,10 @@
                         :value="el.foodId"
                         size="mini"
                         autocomplete="off"
-                        @change="e => handleFoodChange(e, index, i, idx, 'foodId')"
+                        @change="e => handleFoodChange(e, index, i, idx, el.categoryId)"
                       >
                         <el-option
-                          v-for="categoryItem in foodList"
+                          v-for="categoryItem in foodList[el.categoryId]"
                           :key="categoryItem.id"
                           :label="categoryItem.name"
                           :value="categoryItem.id"
@@ -105,20 +112,22 @@
                       {{ el.unit }}
 
                       <!-- 操作按钮 -->
-                      <i
-                        class="el-icon-circle-plus dialog-form__el"
-                        @click="addDetailListItem(index, i, idx)"
-                      />
-                      <i
-                        v-if="idx > 0"
-                        class="el-icon-error dialog-form__el"
-                        @click="deleteDetailListItem(index, i, idx)"
-                      />
+                      <div class="flex" style="min-width: 80px;">
+                        <i
+                          class="el-icon-circle-plus dialog-form__el"
+                          @click="addDetailListItem(index, i, idx)"
+                        />
+                        <i
+                          v-if="idx > 0"
+                          class="el-icon-error dialog-form__el"
+                          @click="deleteDetailListItem(index, i, idx)"
+                        />
+                      </div>
 
                       <!-- ---- -->
                     </div>
                     <div class="dialog-form-item__desc">
-                      {{ el | handleContainFilter(foodList) }}
+                      {{ el | handleContainFilter(foodList[el.categoryId]) }}
                     </div>
                   </div>
                 </el-form-item>
@@ -126,10 +135,10 @@
             </div>
 
             <template slot="right">
-              <div class="flex">
+              <div v-if="!isEdit" class="flex" style="min-width: 80px;">
                 <i
                   class="el-icon-circle-plus dialog-form__el cursor"
-                  @click="addItem"
+                  @click="addItem()"
                 />
                 <i
                   v-if="index > 0"
@@ -152,7 +161,7 @@
 </template>
 
 <script>
-import { getFoodCategorytList, getFoodSelectList } from '@/api/food'
+import { getFoodCategoryList, getFoodSelectList } from '@/api/food'
 import { addDietPlan } from '@/api/diet'
 import { deepClone } from '@/utils'
 
@@ -233,12 +242,15 @@ export default {
     },
     handleDayContainerFilter(list, foods) {
       let heats = 0; let proteins = 0; let fats = 0; let carbonWaters = 0
-
-      if (foods && foods.length > 0 && list && list.length > 0) {
+      let foodsList = []
+      Object.values(foods).map(item => {
+        foodsList = [...item]
+      })
+      if (foodsList && foodsList.length > 0 && list && list.length > 0) {
         list.map(item => {
           if (item.detailList && item.detailList.length > 0) {
             item.detailList.map(it => {
-              const { heat = 0, protein = 0, fat = 0, carbonWater = 0 } = foods.find(el => el.id === it.foodId) || {}
+              const { heat = 0, protein = 0, fat = 0, carbonWater = 0 } = foodsList.find(el => el.id === it.foodId) || {}
               heats += it.nums * heat
               proteins += it.nums * protein
               fats += it.nums * fat
@@ -257,18 +269,36 @@ export default {
       default: () => {
         return Object.create(null)
       }
+    },
+    categoryListBak: {
+      type: Array,
+      default: () => {
+        return []
+      }
+    },
+    isEdit: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
       ruleList: [],
-      categorytList: [],
-      foodList: []
+      categoryList: {},
+      foodList: {}
+    }
+  },
+  watch: {
+    categoryListBak: {
+      deep: true,
+      handler() {
+        this.cloneFoodCategoryList()
+      },
+      immediate: true
     }
   },
   created() {
-    // this.splitForm();
-    this.getFoodCategorytList()
+    this.cloneFoodCategoryList()
   },
   methods: {
     handleClose(refresh = false) {
@@ -291,9 +321,9 @@ export default {
       })
     },
 
-    handleFoodChange(e, index, i, idx) {
+    handleFoodChange(e, index, i, idx, categoryId) {
       const form = deepClone(this.form)
-      const { unit = '' } = this.foodList.find(item => item.id === e) || {}
+      const { unit = '' } = this.foodList[categoryId].find(item => item.id === e) || {}
       const item = form.ruleList[index].dayList[i].detailList[idx]
 
       form.ruleList[index].dayList[i].detailList[idx] = {
@@ -308,6 +338,21 @@ export default {
         form,
         refresh: false
       })
+    },
+
+    handleCollapseChange(e) {
+      console.log(e)
+      if (typeof e === 'number') {
+        const { dayList } = this.form.ruleList[e]
+        dayList.map(item => {
+          item.detailList.map(it => {
+            if (it.categoryId) {
+              this.getFoodSelectList(it.categoryId)
+            }
+          })
+        })
+        this.cloneFoodCategoryList()
+      }
     },
 
     initRow(value, index, i, idx) {
@@ -331,15 +376,15 @@ export default {
 
     addItem() {
       /* 新增计划第几天 */
-      this.form.ruleList.push(RULE_LIST_ITEM)
+
+      this.form.ruleList.push({
+        ...RULE_LIST_ITEM,
+        dayNum: this.form.ruleList.length + 1
+      })
     },
 
     addDetailListItem(index, i, idx) {
-      this.form.ruleList[index].dayList[i].detailList.splice(
-        idx,
-        0,
-        DETAIL_LIST_ITEM
-      )
+      this.form.ruleList[index].dayList[i].detailList.push(DETAIL_LIST_ITEM)
     },
 
     delItemHandle(index) {
@@ -354,12 +399,30 @@ export default {
     },
 
     /* 食物分类 */
-    getFoodCategorytList() {
-      getFoodCategorytList({
+    getFoodCategoryList() {
+      return getFoodCategoryList({
         categoryType: 1
       }).then((res) => {
-        this.categorytList = res.data
+        this.categoryListBak = res.data
+        this.cloneFoodCategoryList()
       })
+    },
+
+    cloneFoodCategoryList(index, i, idx) {
+      if (typeof index === 'number') {
+        this.categoryList[`${index}-${i}-${idx}`] = this.categoryListBak
+        this.categoryList[`${index}-${i + 1}-${idx}`] = this.categoryListBak
+        this.categoryList[`${index + 1}-${i}-${idx}`] = this.categoryListBak
+        this.categoryList[`${index}-${i}-${idx + 1}`] = this.categoryListBak
+      } else {
+        for (let m = 0; m < 5; m++) {
+          for (let x = 0; x < 5; x++) {
+            for (let y = 0; y < 5; y++) {
+              this.categoryList[`${m}-${x}-${y}`] = this.categoryListBak
+            }
+          }
+        }
+      }
     },
 
     /* 食物分类下拉改变时,ps: 应该要加参数 */
@@ -372,7 +435,10 @@ export default {
     /* 食物下拉列表 */
     getFoodSelectList(categoryId) {
       getFoodSelectList({ categoryId }).then((res) => {
-        this.foodList = res.data
+        this.foodList = {
+          ...this.foodList,
+          [`${categoryId}`]: res.data
+        }
       })
     },
 

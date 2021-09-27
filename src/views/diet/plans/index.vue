@@ -99,11 +99,17 @@
     </div>
 
     <el-dialog
-      :title="form.id ? '编辑饮食计划' : '新建饮食计划'"
+      :title="isEdit ? '编辑饮食计划' : '新建饮食计划'"
       :visible.sync="dialogFormVisible"
+      destroy-on-close
       width="725px"
     >
-      <plan-edit-modal :form="form" @update="handleFormUpdate" />
+      <plan-edit-modal
+        :is-edit="isEdit"
+        :category-list-bak="categoryList"
+        :form="form"
+        @update="handleFormUpdate"
+      />
     </el-dialog>
   </div>
 </template>
@@ -112,7 +118,7 @@
 import user from '@/mixin/user'
 import { deepClone } from '@/utils'
 import { getPlanList, deleteDietPlan, getDietPlanInfo } from '@/api/diet'
-import { getFoodCategorytList, getFoodSelectList } from '@/api/food'
+import { getFoodCategoryList, getFoodSelectList } from '@/api/food'
 
 import * as dayjs from 'dayjs'
 
@@ -183,7 +189,7 @@ export default {
       current: 1,
       total: 10,
       /* 食物分类 */
-      categorytList: [],
+      categoryList: [],
       /* 食物下拉 */
       foodList: []
     }
@@ -210,16 +216,18 @@ export default {
   },
   created() {
     this.getPlanList()
-    this.getFoodCategorytList()
+    this.getFoodCategoryList()
   },
   methods: {
     handleEdit(row) {
       const { id } = row
       getDietPlanInfo({ id }).then(res => {
         if (res.result === 1) {
+          // this.$nextTick(() => {
           this.form = handlePlan(res.plan)
           this.isEdit = true
           this.dialogFormVisible = true
+          // })
         }
       })
     },
@@ -264,14 +272,16 @@ export default {
 
     /* 添加饮食计划 */
     creareHandle() {
+      // this.$nextTick(() => {
       this.dialogFormVisible = true
+      // })
     },
     /* 食物分类 */
-    getFoodCategorytList() {
-      getFoodCategorytList({
+    getFoodCategoryList() {
+      getFoodCategoryList({
         categoryType: 1
       }).then((res) => {
-        this.categorytList = res.data.list
+        this.categoryList = res.data
       })
     },
 
