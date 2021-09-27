@@ -40,9 +40,9 @@ export const getVipList = data => request({
   data,
   method: 'post'
 })
-/* 运动计划分发 */
+/* 运动计划分发 健身运动分发 */
 export const planDistribute = data => request({
-  url: '/Admin/Repository/planDistribute',
+  url: '/Admin/Motion/planDistribute',
   data,
   method: 'post'
 })
