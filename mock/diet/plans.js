@@ -19,8 +19,9 @@ module.exports = [
         planName
       } = config.body
 
-      const data = new Array(pageNum === LAST_PAGE ? 6 : pageSize).fill({}).map(item => {
-        const createTime = Math.ceil(Math.random() * 10) % 2 === 1 ? beginTime : endTime
+      let data = new Array(pageNum == LAST_PAGE ? 6 : pageSize).fill({}).map(item => {
+
+        const createTime = Math.ceil(Math.random() * 10) % 2 == 1 ? beginTime : endTime
 
         return {
           ...item,
@@ -49,7 +50,8 @@ module.exports = [
     response: ({
       body
     }) => {
-      const result = Math.ceil(Math.random() * 10) % 3 === 0 ? 0 : 1
+
+      const result = Math.ceil(Math.random() * 10) % 3 == 0 ? 0 : 1
 
       const {
         id = ''

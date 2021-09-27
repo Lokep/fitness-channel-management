@@ -2,6 +2,7 @@ import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
+import * as qs from 'qs'
 
 // create an axios instance
 const service = axios.create({
@@ -9,6 +10,10 @@ const service = axios.create({
   // withCredentials: true, // send cookies when cross-domain requests
   timeout: 5000 // request timeout
 })
+
+// axios.defaults.headers = {
+//   "Content-Type": "application/x-www-form-urlencoded"
+// }
 
 // request interceptor
 service.interceptors.request.use(
@@ -18,9 +23,12 @@ service.interceptors.request.use(
     if (store.getters.token) {
       config.headers['X-Token'] = getToken()
     }
+
     return {
       method: 'get',
-      ...config
+
+      ...config,
+      url: config.url + '?' + qs.stringify(config.data)
     }
   },
   error => {

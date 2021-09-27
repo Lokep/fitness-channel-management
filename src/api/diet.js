@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import * as qs from 'qs'
 
 export const getPlanList = data => request({
   url: '/Admin/Diet/planList',
@@ -25,7 +26,7 @@ export const getDishCategoryList = data => request({
 /** * 食品库 start */
 
 export const getFoodList = data => request({
-  url: '/Admin/DICT/food-page',
+  url: '/Admin/DICT/food-page?' + qs.stringify(data),
   data,
   method: 'post'
 })

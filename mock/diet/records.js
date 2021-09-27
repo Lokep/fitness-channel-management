@@ -21,8 +21,9 @@ module.exports = [
         planName
       } = body
 
-      const data = new Array(pageNum === LAST_PAGE ? 6 : pageSize).fill({}).map(item => {
-        const createTime = Math.ceil(Math.random() * 10) % 2 === 1 ? beginTime : endTime
+      let data = new Array(pageNum == LAST_PAGE ? 6 : pageSize).fill({}).map(item => {
+
+        const createTime = Math.ceil(Math.random() * 10) % 2 == 1 ? beginTime : endTime
 
         return {
           ...item,

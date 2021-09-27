@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import * as qs from 'qs'
 /* 饮食打卡列表 */
 export const getClockList = data => request({
   url: '/Admin/Diet/clockList',
@@ -7,7 +8,7 @@ export const getClockList = data => request({
 })
 /* 获取打卡详情 饮食打卡获取 */
 export const getClockDetail = data => request({
-  url: '/Admin/Diet/clockGet',
+  url: '/Admin/Diet/clockGet?' + qs.stringify(data),
   data,
   method: 'post'
 })
