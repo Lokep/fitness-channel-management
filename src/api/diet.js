@@ -32,3 +32,21 @@ export const getFoodList = data => request({
 })
 
 /** * 食品库 end */
+
+export const addDietPlan = data => request({
+  url: '/Admin/Diet/planAdd',
+  data,
+  method: 'post'
+})
+
+export const deleteDietPlan = data => request({
+  url: '/Admin/Diet/planDel',
+  data,
+  method: 'post'
+})
+
+export const getDietPlanInfo = data => request({
+  url: '/Admin/Diet/planGet',
+  data,
+  method: 'post'
+})

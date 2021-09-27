@@ -1,14 +1,17 @@
 <style lang="scss">
-.plans {
+.foods {
   .align-center {
     & > div {
       flex-shrink: 0;
     }
   }
+  .el-input {
+    width: 210px;
+  }
 }
 </style>
 <template>
-  <div class="plans">
+  <div class="foods">
     <!-- 操作模板 -->
     <div class="tools justify-between mb-10">
       <div class="tools-list align-center">
@@ -92,7 +95,7 @@
 
     <el-dialog
       title="编辑食物"
-      width="40%"
+      width="45%"
       :visible.sync="isShowDialog"
     >
 
