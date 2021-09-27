@@ -1,5 +1,4 @@
 import request from '@/utils/request'
-import * as qs from 'qs'
 /**
  * @categoryType {string} required {1|食物}
  */
@@ -16,13 +15,13 @@ export const getFoodSelectList = (data = {}) => request({
 })
 
 export const addFood = data => request({
-  url: '/Admin/DICT/foodAdd?' + qs.stringify(data),
+  url: '/Admin/DICT/foodAdd',
   data,
   method: 'post'
 })
 
 export const editFood = data => request({
-  url: '/Admin/DICT/foodUpdate?' + qs.stringify(data),
+  url: '/Admin/DICT/foodUpdate',
   data,
   method: 'post'
 })
