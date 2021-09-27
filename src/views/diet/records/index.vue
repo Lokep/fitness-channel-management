@@ -80,8 +80,18 @@
         <el-table-column align="center" prop="protein" label="蛋白质（克）" />
         <el-table-column align="center" prop="fat" label="脂肪（克）" />
         <el-table-column align="center" prop="carbonWater" label="碳水（克）" />
-        <el-table-column align="center" prop="submitTime" label="提交时间" />
-        <el-table-column align="center" prop="isRecord" label="记录状态" />
+        <el-table-column align="center" prop="" label="提交时间">
+          <template slot-scope="{ row }">
+            {{ row.submitTime | parseTimeFilter }}
+          </template>
+        </el-table-column>
+        <el-table-column align="center" prop="isRecord" label="记录状态">
+          <template slot-scope="{ row }">
+            <div>
+              {{ row.isRecord==1?'已记录':'未记录' }}
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column align="center" label="操作">
           <template slot-scope="{ row }">
             <div>
@@ -195,45 +205,76 @@
         </el-col>
       </el-row>
       <el-row class="dialog-group">
-        <div class="grid-content bg-purple-dark pt-5 pb-5 flex">
-          <div class="fl label">摄入:</div>
-          <span>
-            <section v-for="(item, index) in detail.detailList" :key="index">
-              <div class="dialog-item">
-                <el-select v-model="item.categoryId" class="flex-1" :disabled="disabled" :class="{'error-computed':errorComputed(item.categoryId)}" @change="foodCategoryChange($event,index)">
-                  <el-option
-                    v-for="categoryItem in categorytList"
-                    :key="categoryItem.id"
-                    :label="categoryItem.name"
-                    :value="categoryItem.id"
-                  />
-                </el-select>
-                <el-select v-model="item.foodId" class="ml-5 flex-1" :disabled="disabled" :class="{'error-computed':errorComputed(item.foodId)}">
-                  <el-option
-                    v-for="categoryItem in foodCheckedComputed(index)"
-                    :key="categoryItem.id"
-                    :label="categoryItem.name"
-                    :value="categoryItem.id"
-                  />
-                </el-select>
-                <el-input v-model.number="item.nums" :disabled="disabled" type="number" class="ml-5 flex-1" :class="{'error-computed':errorComputed(item.nums)}" />
-                <div class="pl-5 pr-5">{{ unitComputed(foodDetailList[index]) }}</div>
-                <!-- <i class="el-icon-circle-plus dialog-form__el" /> -->
-                <i v-if="!disabled" class="el-icon-error dialog-form__el ml-5" @click="deleteHandle(index)" />
-              </div>
-              <div class="text">
-                热量：{{ intakeComputed(index, item, 'heat') }} 千卡
-                蛋白：{{ intakeComputed(index, item, 'protein') }} 克
-                脂肪：{{ intakeComputed(index, item, 'fat') }} 克
-                碳水：{{ intakeComputed(index, item, 'carbonWater') }} 克
-              </div>
-            </section>
-            <el-button v-if="!disabled" plain type="primary" @click="addHandle">新增记录</el-button>
-          </span>
-        </div>
-        <div class="grid-content bg-purple-dark pt-5 pb-5 ">
-          <div class="fl label">饮食建议:</div> <el-input v-model="detail.advice" :disabled="disabled" type="textarea" placeholder="300字以内" maxlength="300" show-word-limit />
-        </div>
+        <el-form ref="detail" label-width="80px" :model="detail" :disabled="disabled">
+          <div class="grid-content bg-purple-dark pt-5 pb-5 flex">
+            <div class="fl label">摄入：</div>
+            <span>
+              <section v-for="(item, index) in detail.detailList" :key="index">
+                <div class="dialog-item">
+                  <el-form-item
+                    :prop="'detailList.'+index+'.categoryId'"
+                    :rules="[
+                      {required:true,message:'不能为空'}
+                    ]"
+                    label-width="0"
+                    class="ml-5 flex-1"
+                  >
+                    <el-select v-model="item.categoryId" class="flex-1" @change="foodCategoryChange($event,index)">
+                      <el-option
+                        v-for="categoryItem in categorytList"
+                        :key="categoryItem.id"
+                        :label="categoryItem.name"
+                        :value="categoryItem.id"
+                      />
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item
+                    :prop="'detailList.'+index+'.foodId'"
+                    :rules="[
+                      {required:true,message:'不能为空'}
+                    ]"
+                    label-width="0"
+                    class="ml-5 flex-1"
+                  >
+                    <el-select v-model="item.foodId">
+                      <el-option
+                        v-for="categoryItem in foodCheckedComputed(index)"
+                        :key="categoryItem.id"
+                        :label="categoryItem.name"
+                        :value="categoryItem.id"
+                      />
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item
+                    label-width="0"
+                    class="ml-5 flex-1"
+                    :prop="'detailList.'+index+'.nums'"
+                    :rules="[
+                      {required:true,message:'不能为空'},
+                      {type:'number',message:'只能为数字'}
+                    ]"
+                  >
+                    <el-input v-model.number="item.nums" type="number" />
+                  </el-form-item>
+                  <div class="pl-5 pr-5">{{ unitComputed(foodDetailList[index]) }}</div>
+                  <!-- <i class="el-icon-circle-plus dialog-form__el" /> -->
+                  <i v-if="!disabled" class="el-icon-error dialog-form__el ml-5" @click="deleteHandle(index)" />
+                </div>
+                <div class="text">
+                  热量：{{ intakeComputed(index, item, 'heat') }} 千卡
+                  蛋白：{{ intakeComputed(index, item, 'protein') }} 克
+                  脂肪：{{ intakeComputed(index, item, 'fat') }} 克
+                  碳水：{{ intakeComputed(index, item, 'carbonWater') }} 克
+                </div>
+              </section>
+              <el-button v-if="!disabled" plain type="primary" @click="addHandle">新增记录</el-button>
+            </span>
+          </div>
+          <!-- :prop="'ruleList.' + index + '.content'" -->
+          <el-form-item label="饮食建议:" label-width="90px" prop="advice" :rules="{required:true,message:'不能为空'}">
+            <el-input v-model="detail.advice" :disabled="disabled" type="textarea" placeholder="300字以内" maxlength="300" show-word-limit />
+          </el-form-item>
+        </el-form>
       </el-row>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
@@ -245,10 +286,11 @@
 
 <script>
 import user from '@/mixin/user'
-import { parseTime } from '@/utils'
+import * as dayjs from 'dayjs'
 import { getClockList, getClockDetail, UpdateClockDetail } from '@/api/records'
 import { getFoodCategorytList, getFoodSelectList } from '@/api/food'
 export default {
+  name: 'DietCecord',
   filters: {
     mealTypeParse(e) {
       switch (e) {
@@ -267,6 +309,9 @@ export default {
         default:
           return '————'
       }
+    },
+    parseTimeFilter(e) {
+      return dayjs(e).format('YYYY-MM-DD HH:mm:ss')
     }
   },
   mixins: [user],
@@ -352,8 +397,8 @@ export default {
       immediate: false,
       handler: function(newValue) {
         if (newValue instanceof Array) {
-          this.$set(this.searchQuery, 'beginTime', parseTime(newValue[0]))
-          this.$set(this.searchQuery, 'endTime', parseTime(newValue[1]))
+          this.$set(this.searchQuery, 'beginTime', dayjs(newValue[0]).format('YYYY-MM-DD HH:mm:ss'))
+          this.$set(this.searchQuery, 'endTime', dayjs(newValue[1]).format('YYYY-MM-DD HH:mm:ss'))
         } else {
           this.$set(this.searchQuery, 'beginTime', '')
           this.$set(this.searchQuery, 'endTime', '')
@@ -390,7 +435,7 @@ export default {
       getFoodCategorytList({
         categoryType: 1
       }).then(res => {
-        this.categorytList = res.data.list
+        this.categorytList = res.data
       })
     },
     /* 食物分类下拉改变时,ps: 应该要加参数 */
@@ -400,8 +445,11 @@ export default {
     /* 食物下拉列表 */
     getFoodSelectList(categoryId, index) {
       getFoodSelectList({ categoryId }).then(res => {
-        this.foodList = res.data.list
-        this.$set(this.foodCheckedList, index, res.data.list)
+        this.foodList = res.data
+        this.$set(this.foodCheckedList, index, res.data)
+        const obj = this.detail.detailList[index]
+        obj.foodId = ''
+        this.$set(this.detail.detailList, index, obj)
       })
     },
     /* 添加摄入记录 */
@@ -475,34 +523,41 @@ export default {
           "suggestTake": "string",
           "updateTime": "string"
         } */
-      const data = this.detail
-      /* 碳水 脂肪 热量 蛋白质 */
-      data.carbonWater = 0
-      data.fat = 0
-      data.heat = 0
-      data.protein = 0
-      this.foodDetailList.forEach((item, index) => {
-        const one = this.detail.detailList[index]
-        // console.log(one)
-        data.carbonWater += (+item?.carbonWater * +one.nums) || 0
-        data.fat += (+item?.fat * +one.nums) || 0
-        data.heat += (+item?.heat * +one.nums) || 0
-        data.protein += (+item?.protein * +one.nums) || 0
-      })
-      data.carbonWater = Number(data.carbonWater.toFixed(2))
-      data.fat = Number(data.fat.toFixed(2))
-      data.heat = Number(data.heat.toFixed(2))
-      data.protein = Number(data.protein.toFixed(2))
-      data.editorName = this.editorName
-      data.editorId = this.editorId
-      data.updateTime = parseTime(new Date())
-      // console.log(data)
-      // return
+      this.$refs['detail'].validate((valid) => {
+        if (valid) {
+          const data = this.detail
+          /* 碳水 脂肪 热量 蛋白质 */
+          data.carbonWater = 0
+          data.fat = 0
+          data.heat = 0
+          data.protein = 0
+          this.foodDetailList.forEach((item, index) => {
+            const one = this.detail.detailList[index]
+            // console.log(one)
+            data.carbonWater += (+item?.carbonWater * +one.nums) || 0
+            data.fat += (+item?.fat * +one.nums) || 0
+            data.heat += (+item?.heat * +one.nums) || 0
+            data.protein += (+item?.protein * +one.nums) || 0
+          })
+          data.carbonWater = Number(data.carbonWater.toFixed(2))
+          data.fat = Number(data.fat.toFixed(2))
+          data.heat = Number(data.heat.toFixed(2))
+          data.protein = Number(data.protein.toFixed(2))
+          data.editorName = this.editorName
+          data.editorId = this.editorId
+          data.updateTime = dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss')
+          // console.log(data)
+          // return
 
-      UpdateClockDetail(data).then(res => {
-        console.log(res)
-        this.$message.success('数据更新成功')
-        this.dialogVisible = false
+          UpdateClockDetail(data).then(res => {
+            console.log(res)
+            this.$message.success('数据更新成功')
+            this.dialogVisible = false
+          })
+        } else {
+          console.log('error submit!!')
+          return false
+        }
       })
     }
   }
@@ -510,6 +565,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+$label-width:90px;
 .grid-content {
   color: #333;
   vertical-align: top;
@@ -524,7 +580,7 @@ export default {
     line-height: 26px;
     padding: 5px 0 5px 10px;
     box-sizing: border-box;
-    width: calc(100% - 5em);
+    width: calc(100% - #{$label-width});
     float: right;
   }
 }
@@ -534,10 +590,10 @@ export default {
   width:150px;
   height:200px;
 }
-::v-deep .el-textarea{
-  width: calc(100% - 5em);
-  float: right;
-}
+// ::v-deep .el-textarea{
+//   width: calc(100% - #{$label-width});
+//   float: right;
+// }
 ::v-deep .image-slot {
   display: flex;
   align-items: center;
@@ -566,10 +622,10 @@ export default {
   flex: 1;
   margin-left: 5px;
 }
-// .label{
-//   width: 5em;
-//   text-align: right;
-// }
+.label{
+  width: $label-width;
+  text-align: right;
+}
 .el-icon-error {
   color: #f56c6c;
   font-size: 30px;
@@ -583,7 +639,8 @@ export default {
 }
 .dialog-item {
   display: flex;
-  align-items: center;
+  // align-items: center;
+  line-height: 36px;
 }
 .text {
   padding: 5px 0;
@@ -591,5 +648,16 @@ export default {
 }
 .flex-1 {
   flex: 1;
+}
+section{
+  $num:12px;
+  padding:0 0 $num 0;
+  & +section {
+    border-top: 1px solid #eee;
+    padding-top: $num;
+  }
+}
+::v-deep section .el-form-item{
+  margin-bottom: 6px;
 }
 </style>
