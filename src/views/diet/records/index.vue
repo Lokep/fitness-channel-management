@@ -236,7 +236,7 @@
                     label-width="0"
                     class="ml-5 flex-1"
                   >
-                    <el-select v-model="item.foodId">
+                    <el-select v-model="item.foodId" @change="foodChange($event,index)">
                       <el-option
                         v-for="categoryItem in foodCheckedComputed(index)"
                         :key="categoryItem.id"
@@ -372,6 +372,9 @@ export default {
       /* mock 时可能没有找到 foodid 会显示0 */
       return (index, item, key) => {
         const one = this.foodDetailList[index]
+        // const one = this.foodCheckedList[index]
+        // console.log(index, item, key)
+        // console.log(one)
         if (one?.[key] && item?.nums) return (+one[key] * +item?.nums).toFixed(2)
         return 0
       }
@@ -445,12 +448,19 @@ export default {
     /* 食物下拉列表 */
     getFoodSelectList(categoryId, index) {
       getFoodSelectList({ categoryId }).then(res => {
+        console.log(res)
         this.foodList = res.data
         this.$set(this.foodCheckedList, index, res.data)
+        /* 重置食物 */
         const obj = this.detail.detailList[index]
         obj.foodId = ''
         this.$set(this.detail.detailList, index, obj)
       })
+    },
+    foodChange(value, index) {
+      const foodCheckedDetail = this.foodList.find(item => item.id === value) || {}
+      // console.log(foodCheckedDetail)
+      this.$set(this.foodDetailList, index, foodCheckedDetail)
     },
     /* 添加摄入记录 */
     addHandle() {
@@ -478,8 +488,9 @@ export default {
         const categoryId = item.categoryId
         const foodId = item.foodId
         getFoodSelectList({ categoryId }).then(res => {
-          this.foodDetailList.push(res.data.list.find(item => item.id === foodId) || {})
-          this.foodCheckedList.push(res.data.list)
+          // console.log(res)
+          this.foodDetailList.push(res.data.find(item => item.id === foodId) || {})
+          this.foodCheckedList.push(res.data)
         })
       })
     },
