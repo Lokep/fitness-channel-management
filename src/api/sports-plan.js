@@ -1,8 +1,7 @@
 import request from '@/utils/request'
-import * as qs from 'qs'
 
 export const getSportsPlanList = data => request({
-  url: '/Admin/Repository/list?' + qs.stringify(data),
+  url: '/Admin/Repository/list',
   data,
   method: 'post'
 })

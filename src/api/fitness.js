@@ -55,14 +55,12 @@ export const getClockList = data => request({
 /* 健身运动打卡获取? 饮食打卡获取*/
 export const clockGet = data => request({
   url: '/Admin/Motion/clockGet',
-  // url: '/Admin/Motion/clockGet?' + qs.stringify(data),
   data,
   method: 'post'
 })
 /* 健身运动打卡获取? 饮食打卡更新*/
 export const clockUpdate = data => request({
   url: '/Admin/Motion/clockUpdate',
-  // url: '/Admin/Motion/clockUpdate?' + qs.stringify(data),
   data,
   method: 'post'
 })

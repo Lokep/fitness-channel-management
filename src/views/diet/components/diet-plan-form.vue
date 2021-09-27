@@ -3,7 +3,7 @@
   border: 1px solid #e4e7ed;
   border-radius: 6px;
   overflow: hidden;
-  width: calc(100% - 80px);
+  width: 100%;
   margin-right: 10px;
   &-container{
     display: flex;
@@ -35,8 +35,8 @@
 <template>
   <div class="plan-container">
     <div class="plan">
-      <el-collapse accordion size="mini">
-        <el-collapse-item>
+      <el-collapse accordion size="mini" @change="handleChange">
+        <el-collapse-item :name="name">
           <template slot="title">
             <div class="collapse-title align-center">
               <slot name="title" />
@@ -52,10 +52,18 @@
 </template>
 <script>
 export default {
+  props: {
+    // eslint-disable-next-line
+    name: String | Number
+  },
   data() {
     return {}
   },
   created() {},
-  methods: {}
+  methods: {
+    handleChange(e) {
+      this.$emit('change', e)
+    }
+  }
 }
 </script>

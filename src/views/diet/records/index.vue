@@ -288,7 +288,7 @@
 import user from '@/mixin/user'
 import * as dayjs from 'dayjs'
 import { getClockList, getClockDetail, UpdateClockDetail } from '@/api/records'
-import { getFoodCategorytList, getFoodSelectList } from '@/api/food'
+import { getFoodCategoryList, getFoodSelectList } from '@/api/food'
 export default {
   name: 'DietCecord',
   filters: {
@@ -411,7 +411,7 @@ export default {
   },
   created() {
     this.getClockList()
-    this.getFoodCategorytList()
+    this.getFoodCategoryList()
   },
   methods: {
     /* 食物打卡列表 */
@@ -434,8 +434,8 @@ export default {
       })
     },
     /* 食物分类 */
-    getFoodCategorytList() {
-      getFoodCategorytList({
+    getFoodCategoryList() {
+      getFoodCategoryList({
         categoryType: 1
       }).then(res => {
         this.categorytList = res.data
