@@ -1,6 +1,6 @@
 
 import request from '@/utils/request'
-
+// import * as qs from 'qs'
 /* 健身运动列表 */
 export const getSportsPlanList = data => request({
   url: '/Admin/Motion/planList',
@@ -43,6 +43,26 @@ export const getVipList = data => request({
 /* 运动计划分发 健身运动分发 */
 export const planDistribute = data => request({
   url: '/Admin/Motion/planDistribute',
+  data,
+  method: 'post'
+})
+/* 健身运动打卡列表 */
+export const getClockList = data => request({
+  url: '/Admin/Motion/clockList',
+  data,
+  method: 'post'
+})
+/* 健身运动打卡获取? 饮食打卡获取*/
+export const clockGet = data => request({
+  url: '/Admin/Motion/clockGet',
+  // url: '/Admin/Motion/clockGet?' + qs.stringify(data),
+  data,
+  method: 'post'
+})
+/* 健身运动打卡获取? 饮食打卡更新*/
+export const clockUpdate = data => request({
+  url: '/Admin/Motion/clockUpdate',
+  // url: '/Admin/Motion/clockUpdate?' + qs.stringify(data),
   data,
   method: 'post'
 })
