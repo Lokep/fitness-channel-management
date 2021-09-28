@@ -10,10 +10,11 @@ const name = defaultSettings.title || 'vue Element Admin' // page title
 
 const port = process.env.port || process.env.npm_config_port || 9527 // dev port
 
-// All configuration item explanations can be find in https://cli.vuejs.org/config/
+console.log('[env]: ', process.env.ENV)
+
 module.exports = {
   lintOnSave: false,
-  publicPath: '/',
+  publicPath: process.env.ENV = 'development' ? '/m' : '/m',
   outputDir: 'dist',
   assetsDir: 'static',
   // lintOnSave: process.env.NODE_ENV === 'development',
