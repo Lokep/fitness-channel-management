@@ -564,6 +564,7 @@ export default {
             console.log(res)
             this.$message.success('数据更新成功')
             this.dialogVisible = false
+            this.getClockList()
           })
         } else {
           console.log('error submit!!')
