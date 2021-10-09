@@ -14,6 +14,9 @@
             size="mini"
             placeholder="请输入内容"
             prefix-icon="el-icon-search"
+            clearable
+            @change="handleSearch"
+            @clear="handleSearch"
           />
         </div>
 
@@ -28,6 +31,9 @@
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
+            clearable
+            @change="handleSearch"
+            @clear="handleSearch"
           />
         </div>
 
@@ -40,6 +46,9 @@
             size="mini"
             placeholder="请输入内容"
             prefix-icon="el-icon-search"
+            clearable
+            @change="handleSearch"
+            @clear="handleSearch"
           />
         </div>
 
@@ -47,8 +56,15 @@
           <div class="tools-item__label">
             记录状态
           </div>
-          <el-select v-model="searchQuery.record" size="mini">
-            <el-option :value="0" label="全部" />
+          <el-select
+            v-model="searchQuery.isRecord"
+            size="mini"
+            clearable
+            @change="handleSearch"
+            @clear="handleSearch"
+          >
+            <el-option value="0" label="未记录" />
+            <el-option value="1" label="已记录" />
           </el-select>
         </div>
 
@@ -82,7 +98,7 @@
         <el-table-column align="center" prop="carbonWater" label="碳水（克）" />
         <el-table-column align="center" prop="" label="提交时间">
           <template slot-scope="{ row }">
-            {{ row.submitTime | parseTimeFilter }}
+            {{ row.submitTime | handleTimeFilter }}
           </template>
         </el-table-column>
         <el-table-column align="center" prop="isRecord" label="记录状态">
@@ -179,7 +195,7 @@
         </el-col>
         <el-col :span="12">
           <div class="grid-content bg-purple-dark pt-5 pb-5">
-            <div class="fl label">打卡时间:</div><span>打卡时间</span>
+            <div class="fl label">打卡时间:</div><span>{{ detail.submitTime | handleTimeFilter }}</span>
           </div>
         </el-col>
         <el-col :span="12">
@@ -267,7 +283,7 @@
                   碳水：{{ intakeComputed(index, item, 'carbonWater') }} 克
                 </div>
               </section>
-              <el-button v-if="!disabled" plain type="primary" @click="addHandle">新增记录</el-button>
+              <el-button v-if="!disabled" size="mini" plain type="primary" @click="addHandle">新增记录</el-button>
             </span>
           </div>
           <!-- :prop="'ruleList.' + index + '.content'" -->
@@ -277,8 +293,8 @@
         </el-form>
       </el-row>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitHandle">记录</el-button>
+        <el-button size="mini" @click="dialogVisible = false">取消</el-button>
+        <el-button size="mini" type="primary" @click="submitHandle">记录</el-button>
       </span>
     </el-dialog>
   </div>
@@ -312,6 +328,10 @@ export default {
     },
     parseTimeFilter(e) {
       return dayjs(e).format('YYYY-MM-DD HH:mm:ss')
+    },
+    handleTimeFilter(e) {
+      if (!e) return ''
+      return dayjs(e).format('YYYY-MM-DD')
     }
   },
   mixins: [user],
@@ -322,6 +342,7 @@ export default {
       disabled: true,
       /* 饮食打卡列表参数 */
       searchQuery: {
+        isRecord: null,
         beginTime: '',
         endTime: '',
         record: 0,
@@ -400,8 +421,8 @@ export default {
       immediate: false,
       handler: function(newValue) {
         if (newValue instanceof Array) {
-          this.$set(this.searchQuery, 'beginTime', dayjs(newValue[0]).format('YYYY-MM-DD HH:mm:ss'))
-          this.$set(this.searchQuery, 'endTime', dayjs(newValue[1]).format('YYYY-MM-DD HH:mm:ss'))
+          this.$set(this.searchQuery, 'beginTime', dayjs(newValue[0]).format('YYYY-MM-DD') + ' 00:00:00')
+          this.$set(this.searchQuery, 'endTime', dayjs(newValue[1]).format('YYYY-MM-DD') + ' 23:59:59')
         } else {
           this.$set(this.searchQuery, 'beginTime', '')
           this.$set(this.searchQuery, 'endTime', '')
@@ -414,6 +435,11 @@ export default {
     this.getFoodCategoryList()
   },
   methods: {
+    handleSearch() {
+      this.searchQuery.pageNum = 1
+      this.getClockList()
+    },
+
     /* 食物打卡列表 */
     getClockList() {
       getClockList(this.searchQuery).then(res => {
@@ -564,6 +590,7 @@ export default {
             console.log(res)
             this.$message.success('数据更新成功')
             this.dialogVisible = false
+            this.getClockList()
           })
         } else {
           console.log('error submit!!')
@@ -617,7 +644,7 @@ $label-width:90px;
   }
 }
 .dialog-group {
-  border-bottom: 2px solid #eee;
+  border-bottom: 1px solid #eee;
   padding-bottom: 10px;
   +.dialog-group{
      padding-top: 10px;

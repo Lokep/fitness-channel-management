@@ -96,7 +96,7 @@ export const constantRoutes = [
   {
     path: '/sleep',
     component: Layout,
-    alwaysShow: true,
+    // alwaysShow: true,
     meta: {
       title: '睡眠管理',
       icon: 'email'

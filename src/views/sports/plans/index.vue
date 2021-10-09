@@ -165,8 +165,8 @@
           </DietPlanForm>
           <template /></template></el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitHandle">记录</el-button>
+        <el-button size="mini" @click="dialogVisible = false">取消</el-button>
+        <el-button size="mini" type="primary" @click="submitHandle">记录</el-button>
       </span>
     </el-dialog>
     <!-- 分发 -->
@@ -180,38 +180,58 @@
       <el-table
         ref="multipleTable"
         :data="tableData"
+        border
+        size="small"
         tooltip-effect="dark"
         style="width: 100%"
         @selection-change="handleSelectionChange"
       >
         <el-table-column
+          align="center"
           type="selection"
           label="全选"
           width="55"
         />
         <el-table-column
+          align="center"
           prop="wechatName"
           label="微信名称"
           show-overflow-tooltip
-        />
+        >
+          <template slot-scope="{ row }">
+            {{ row.wechatName || '--' }}
+          </template>
+        </el-table-column>
         <el-table-column
+          align="center"
           prop="name"
           label="用户名称"
-        />
+        >
+          <template slot-scope="{ row }">
+            {{ row.name || '--' }}
+          </template>
+        </el-table-column>
         <el-table-column
-          prop="address"
-          sex="性别"
+          align="center"
+          prop="sex"
+          label="性别"
           show-overflow-tooltip
-        />
+        >
+          <template slot-scope="{ row }">
+            {{ row.sex == 1 ? '男' : '女' }}
+          </template>
+        </el-table-column>
+
         <el-table-column
+          align="center"
           prop="birth"
           label="出生日期"
           show-overflow-tooltip
         />
       </el-table>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible2 = false">取消</el-button>
-        <el-button type="primary" @click="planDistribute">分发</el-button>
+        <el-button size="mini" @click="dialogVisible2 = false">取消</el-button>
+        <el-button size="mini" type="primary" @click="planDistribute">分发</el-button>
       </span>
     </el-dialog>
   </div>
@@ -294,7 +314,7 @@ export default {
         return
       }
       planDistribute({
-        memberList,
+        memberList: memberList.join(','),
         planId: this.planId
       }).then(res => {
         // console.log(res)
@@ -303,6 +323,7 @@ export default {
           message: '分发成功'
         })
         this.dialogVisible2 = false
+        this.getSportsPlanList()
       })
     },
     distribute(id) {

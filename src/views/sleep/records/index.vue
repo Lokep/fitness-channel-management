@@ -49,6 +49,8 @@
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
+            clearable
+            @clear="handleSearchByDate"
             @change="handleSearchByDate"
           />
         </div>
@@ -81,7 +83,11 @@
       <el-table size="mini" border :data="sleepRecords">
         <el-table-column align="center" label="序号" type="index" />
         <el-table-column align="center" prop="memberName" label="用户名称" />
-        <el-table-column align="center" prop="hour" label="睡眠时长" />
+        <el-table-column align="center" prop="hour" label="睡眠时长">
+          <template slot-scope="{row}">
+            {{ row.hour }}小时{{ row.minute }}分钟
+          </template>
+        </el-table-column>
         <el-table-column align="center" prop="submitTime" label="提交时间" />
         <el-table-column align="center" prop="isRecord" label="记录状态">
           <template slot-scope="{row}">
@@ -118,19 +124,20 @@
           <el-descriptions-item label="血型" />
         </el-descriptions>
 
-        <hr class="mb-10">
+        <hr class="mb-10" style="color: #eee;border:0;background: #eee; height: 1px;">
 
         <el-row :gutter="20">
 
           <el-col :span="8">
             <el-descriptions title="" :column="1">
-              <el-descriptions-item label="记录时间">{{ record.submitTime }}</el-descriptions-item>
+              <el-descriptions-item label="记录时间">{{ record.submitTime | handleTimeFilter }}</el-descriptions-item>
               <el-descriptions-item label="记录图片">
                 <el-image fit="container" style="width: 100px; height: 100px;" :src="record.picUrl">
                   <div slot="placeholder" class="image-slot">
                     加载中<span class="dot">...</span>
                   </div>
                 </el-image>
+
               </el-descriptions-item>
             </el-descriptions>
           </el-col>
@@ -160,8 +167,8 @@
         </el-row>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="handleClose">取 消</el-button>
-        <el-button size="mini" type="primary" @click="handleConfirm">确 定</el-button>
+        <el-button size="mini" @click="handleClose">关闭</el-button>
+        <el-button v-if="record.isRecord == 0" size="mini" type="primary" @click="handleConfirm">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -172,6 +179,12 @@
 import * as dayjs from 'dayjs'
 import { getSleepInfo, getSleepRecords, updateSleepRecord } from '@/api/sleep'
 export default {
+  filters: {
+    handleTimeFilter(time) {
+      if (!time) return ''
+      return dayjs(time).format('YYYY-MM-DD')
+    }
+  },
   data() {
     return {
       date: [],
@@ -202,10 +215,17 @@ export default {
       this.getSleepRecords()
     },
     handleSearchByDate(e) {
+      if (!e) {
+        this.params.beginTime = null
+        this.params.endTime = null
+        this.getSleepRecords()
+        return
+      }
+
       const [beginTime, endTime] = e
       this.params.pageNum = 1
-      this.params.beginTime = dayjs(beginTime).format('YYYY-MM-DD hh:mm:ss')
-      this.params.endTime = dayjs(endTime).format('YYYY-MM-DD hh:mm:ss')
+      this.params.beginTime = dayjs(beginTime).format('YYYY-MM-DD') + ' 00:00:00'
+      this.params.endTime = dayjs(endTime).format('YYYY-MM-DD') + ' 23:59:59'
       this.getSleepRecords()
     },
     handlePagination(e) {
@@ -276,9 +296,10 @@ export default {
         if (res.result === 1) {
           this.record = {
             ...this.record,
-            ...res.data
+            ...res.data,
+            ...row
           }
-          this.record = row
+
           this.isShowDialog = true
         }
       })

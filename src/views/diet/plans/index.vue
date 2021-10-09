@@ -70,7 +70,7 @@
         <el-table-column align="center" prop="creatorName" label="创建人" />
         <el-table-column align="center" prop="createTime" label="创建时间">
           <template slot-scope="{ row }">
-            {{ row.createTime | parseTime }}
+            {{ row.createTime | handleTimeFilter }}
           </template>
         </el-table-column>
         <el-table-column align="center" prop="receiveNums" label="领取人次" />
@@ -131,6 +131,10 @@ export default {
   filters: {
     parseTime(v) {
       return dayjs(v).format('YYYY-MM-DD hh:mm:ss')
+    },
+    handleTimeFilter(time) {
+      if (!time) return ''
+      return dayjs(time).format('YYYY-MM-DD')
     }
   },
   /* mixins 用户权限 备用 */
@@ -223,11 +227,9 @@ export default {
       const { id } = row
       getDietPlanInfo({ id }).then(res => {
         if (res.result === 1) {
-          // this.$nextTick(() => {
           this.form = handlePlan(res.plan)
           this.isEdit = true
           this.dialogFormVisible = true
-          // })
         }
       })
     },
@@ -272,9 +274,44 @@ export default {
 
     /* 添加饮食计划 */
     creareHandle() {
-      // this.$nextTick(() => {
       this.dialogFormVisible = true
-      // })
+      this.form = {
+        createTime: 0,
+        creatorId: '',
+        creatorName: '',
+        id: '',
+        isDelete: 0,
+        receiveNums: 0,
+        planName: '',
+        dayCount: 1,
+        ruleList: [
+          {
+            dayNum: 1,
+            dayList: [
+              {
+                mealType: 1,
+                meal: '早餐',
+                detailList: []
+              },
+              {
+                mealType: 2,
+                meal: '午餐',
+                detailList: []
+              },
+              {
+                mealType: 3,
+                meal: '晚餐',
+                detailList: []
+              }
+              // {
+              //   mealType: 4,
+              //   meal: '加餐',
+              //   detailList: []
+              // }
+            ]
+          }
+        ]
+      }
     },
     /* 食物分类 */
     getFoodCategoryList() {
