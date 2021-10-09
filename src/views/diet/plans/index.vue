@@ -275,6 +275,7 @@ export default {
     /* 添加饮食计划 */
     creareHandle() {
       this.dialogFormVisible = true
+      this.isEdit = false
       this.form = {
         createTime: 0,
         creatorId: '',
