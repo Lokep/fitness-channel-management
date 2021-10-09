@@ -157,7 +157,7 @@
         确 定
       </el-button>
       <el-button v-else size="mini" type="primary" @click="planUpdate">
-        编辑 确 定
+        确 定
       </el-button>
     </span>
   </div>
