@@ -3,7 +3,8 @@ import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
 import * as qs from 'qs'
-
+/* 请求参数长度 */
+const queryStringLength = 1000
 // create an axios instance
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
@@ -23,12 +24,15 @@ service.interceptors.request.use(
     if (store.getters.token) {
       config.headers['X-Token'] = getToken()
     }
-
+    let urlString = config.url + '?' + qs.stringify(config.data)
+    if (urlString.length > queryStringLength) {
+      urlString = config.url
+    }
     return {
       method: 'get',
 
       ...config,
-      url: config.url + '?' + qs.stringify(config.data)
+      url: urlString
     }
   },
   error => {

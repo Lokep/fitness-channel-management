@@ -51,7 +51,7 @@
               >
                 <el-form-item :label="it.meal" label-width="80px" required>
                   <el-button
-                    v-if="it.detailList.length === 0"
+                    v-if="detailListComputed(it)"
                     type="primary"
                     size="mini"
                     icon="el-icon-plus"
@@ -153,8 +153,11 @@
     </el-form>
     <span slot="footer" class="dialog-footer mt-10" style="display: flex; justify-content: flex-end;">
       <el-button size="mini" @click="e => handleClose()">取 消</el-button>
-      <el-button size="mini" type="primary" @click="addDietPlan">
+      <el-button v-if="!isEdit" size="mini" type="primary" @click="addDietPlan">
         确 定
+      </el-button>
+      <el-button v-else size="mini" type="primary" @click="planUpdate">
+        编辑 确 定
       </el-button>
     </span>
   </div>
@@ -162,7 +165,7 @@
 
 <script>
 import { getFoodCategoryList, getFoodSelectList } from '@/api/food'
-import { addDietPlan } from '@/api/diet'
+import { addDietPlan, planUpdate } from '@/api/diet'
 import { deepClone } from '@/utils'
 
 const FORM_SKELETON = {
@@ -281,12 +284,21 @@ export default {
       default: false
     }
   },
+
   data() {
     return {
       ruleList: [],
       categoryList: {},
       foodList: {}
     }
+  },
+  computed: {
+    detailListComputed: function() {
+      return (e) => {
+        return e?.detailList?.length === 0
+      }
+    }
+
   },
   watch: {
     categoryListBak: {
@@ -343,8 +355,9 @@ export default {
     handleCollapseChange(e) {
       console.log(e)
       if (typeof e === 'number') {
-        const { dayList } = this.form.ruleList[e]
+        const { dayList = [] } = this.form.ruleList[e]
         dayList.map(item => {
+          item.detailList = item.detailList || []
           item.detailList.map(it => {
             if (it.categoryId) {
               this.getFoodSelectList(it.categoryId)
@@ -467,6 +480,31 @@ export default {
         })
         .catch(() => {})
     },
+    /** 编辑 */
+    planUpdate() {
+      const ruleList = this.makeUpRuleList()
+
+      const { status, message } = this.checkIsForm()
+
+      if (status === 'FAIL') {
+        this.$message.warning(message)
+        return
+      }
+
+      this.$confirm('是否确认执行此操作', '提示')
+        .then(() => {
+          planUpdate({
+            ...this.form,
+            ruleList
+          }).then((res) => {
+            if (res.result === 1) {
+              this.$message.success('操作成功')
+              this.handleClose(true)
+            }
+          })
+        })
+        .catch(() => {})
+    },
 
     checkIsForm() {
       const { planName, ruleList } = this.form
@@ -507,8 +545,9 @@ export default {
 
     makeUpRuleList() {
       const ruleList = []
+      console.log('makeUpRuleList')
       this.form.ruleList.map((item) => {
-        item.dayList.map(it => {
+        item?.dayList.map(it => {
           ruleList.push({
             ...item,
             // dayNum: item.dayNum,

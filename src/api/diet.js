@@ -37,6 +37,11 @@ export const addDietPlan = data => request({
   data,
   method: 'post'
 })
+export const planUpdate = data => request({
+  url: '/Admin/Diet/planUpdate',
+  data,
+  method: 'post'
+})
 
 export const deleteDietPlan = data => request({
   url: '/Admin/Diet/planDel',
