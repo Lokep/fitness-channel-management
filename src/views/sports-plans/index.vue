@@ -97,6 +97,7 @@
 
       <div class="pagination mt-10">
         <el-pagination
+          :current-page.sync="params.pageNum"
           background
           layout="prev, pager, next"
           :total="params.total"
@@ -202,10 +203,12 @@
           <el-table-column align="center" prop="birth" label="出生日期" />
         </el-table>
         <el-pagination
+          :current-page.sync="member.pageNum"
           hide-on-single-page
           background
           layout="prev, pager, next"
           :total="member.total"
+          @current-change="getSportsPlanList"
         />
       </div>
       <span slot="footer" class="dialog-footer">

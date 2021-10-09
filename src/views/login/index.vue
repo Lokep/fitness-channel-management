@@ -3,7 +3,7 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <h3 class="title">安健宝管理后台</h3>
       </div>
 
       <el-form-item prop="account ">
@@ -58,25 +58,10 @@
 </template>
 
 <script>
-// import { validUsername } from '@/utils/validate'
 
 export default {
   name: 'Login',
   data() {
-    // const validateUsername = (rule, value, callback) => {
-    //   if (!validUsername(value)) {
-    //     callback(new Error('Please enter the correct user name'))
-    //   } else {
-    //     callback()
-    //   }
-    // }
-    // const validatePassword = (rule, value, callback) => {
-    //   if (value.length < 6) {
-    //     callback(new Error('The password can not be less than 6 digits'))
-    //   } else {
-    //     callback()
-    //   }
-    // }
     return {
       loginForm: {
         account: '13567899876',
@@ -140,14 +125,15 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm)
-            .then(() => {
-              this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
-              this.loading = false
-            })
-            .catch(() => {
-              this.loading = false
-            })
+          // login({
+          //   ...this.loginForm
+          // }).then(res => {
+          //   if (res.result === 1) {
+          //     saveCache('loginInfo', res.data)
+          //     this.$router.replace('/')
+          //   }
+          // })
+          this.$router.replace('/')
         } else {
           console.log('error submit!!')
           return false

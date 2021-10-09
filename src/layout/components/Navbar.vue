@@ -18,7 +18,7 @@
 
       </template>
 
-      <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
+      <!-- <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
           <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
           <i class="el-icon-caret-bottom" />
@@ -40,7 +40,8 @@
             <span style="display:block;">Log Out</span>
           </el-dropdown-item>
         </el-dropdown-menu>
-      </el-dropdown>
+      </el-dropdown> -->
+      <el-button class="mr-10" type="primary" size="mini" @click="quit">退出</el-button>
     </div>
   </div>
 </template>
@@ -77,6 +78,13 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+
+    quit() {
+      this.$confirm('是否确认退出登录', '提示', { type: 'warning' }).then(() => {
+        localStorage.removeItem('loginInfo')
+        this.$router.replace('/login')
+      }).catch(() => {})
     }
   }
 }

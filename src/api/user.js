@@ -78,8 +78,13 @@ export const getRolePermission = data => request({
   method: 'post'
 })
 
+export const addUser = data => request({
+  url: '/sys/user/add', // 账户新增或者更新
+  data,
+  method: 'post'
+})
 export const updateUser = data => request({
-  url: '/sys/user/addOrUpdate', // 账户新增或者更新
+  url: '/sys/user/updatePwd', // 账户新增或者更新
   data,
   method: 'post'
 })

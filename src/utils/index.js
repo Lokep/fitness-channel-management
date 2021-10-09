@@ -355,3 +355,11 @@ export function removeClass(ele, cls) {
     ele.className = ele.className.replace(reg, ' ')
   }
 }
+
+export const getCache = key => {
+  return JSON.parse(localStorage.getItem(key) || '{}')
+}
+
+export const saveCache = (key, value) => {
+  localStorage.setItem(key, JSON.stringify(value))
+}

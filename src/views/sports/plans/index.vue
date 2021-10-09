@@ -76,7 +76,7 @@
     </div>
     <!-- 弹窗 -->
     <el-dialog
-      title="编辑饮食计划"
+      title="编辑运动计划"
       :visible.sync="dialogVisible"
       width="768px"
       :append-to-body="true"
@@ -100,7 +100,7 @@
             placeholder="请输入"
           />
         </el-form-item>
-        <el-button v-if="detail.ruleList.length < 1" @click="addItem">添加计划</el-button>
+        <el-button v-if="detail.ruleList.length < 1" type="primary" size="mini" icon="el-icon-plus" @click="addItem">添加计划</el-button>
         <template v-else>
           <DietPlanForm v-for="(item,index) in detail.ruleList" :key="index" class="mb-10">
             <template slot="title">
@@ -352,7 +352,6 @@ export default {
         content: '',
         dayNum: this.detail.ruleList[this.detail.ruleList.length - 1]?.dayNum + 1 || 1,
         recommendConsume: '',
-        createTime: parseTime(new Date()),
         planId: this.detail.id
       }
       this.detail.ruleList.push(options)
@@ -377,21 +376,34 @@ export default {
       this.$refs['detail'].validate((valid) => {
         if (valid) {
           /* 如果是添加走添加 */
-          if (this.isAdd) {
-            this.addHandle()
-          } else {
-            /* 否则是编辑 */
-            const options = this.detail
-            updateSportsPlanDetail(options).then(res => {
-
-            })
-          }
+          this.$confirm('是否确认执行该操作', '提示', {
+            type: 'warning'
+          }).then(() => {
+            if (this.isAdd) {
+              this.addHandle()
+            } else {
+              /* 否则是编辑 */
+              this.updateSportsPlanDetail()
+            }
+          }).catch(() => {})
         } else {
           console.log('error submit!!')
           return false
         }
       })
     },
+
+    updateSportsPlanDetail() {
+      const options = this.detail
+      updateSportsPlanDetail(options).then(res => {
+        if (res.result === 1) {
+          this.$message.success('操作成功')
+          this.dialogVisible = false
+          this.getSportsPlanList()
+        }
+      })
+    },
+
     /* 编辑获取详情 */
     edit(id, index) {
       this.isAdd = false
@@ -399,11 +411,7 @@ export default {
         id
       }).then(res => {
         this.detail = { ...res.data, ...this.sportsPlanList[index] }
-        // this.detail.createTime = this.sportsPlanList[index].createTime
-        // // this.detail.creatorId = this.creatorId
-        // this.detail.creatorName = this.sportsPlanList[index].creatorName
         this.dialogVisible = true
-        // console.log(res)
       })
     },
     /* 删除列表 */
@@ -429,37 +437,14 @@ export default {
     /*  */
     addPlan() {
       this.detail = {
-        createTime: parseTime(new Date()),
         creatorName: this.creatorName,
         creatorId: this.creatorId,
-        // dayCount: 1,
-        // id: 115,
         planName: '',
         receiveNums: '',
         ruleList: []
       }
       this.isAdd = true
       this.dialogVisible = true
-      console.log(this.detail)
-      /* {
-        creatorId: this.creatorId,
-        // id: 'string',
-        isDelete: 0,
-        planName: this.,
-        receiveNums: 0,
-        ruleList: [
-          {
-            advice: 'string',
-            content: 'string',
-            createTime: '2021-09-14T13:25:25.892Z',
-            dayNum: 0,
-            id: 'string',
-            planId: 'string',
-            recommendConsume: 'string'
-          }
-        ],
-        updateTime: '2021-09-14T13:25:25.892Z'
-      } */
     },
     addHandle() {
       const _this = this
@@ -469,7 +454,11 @@ export default {
       },
       this.detail)
       addPlan(options).then(res => {
-
+        if (res.result === 1) {
+          this.$message.success('操作成功')
+          this.dialogVisible = false
+          this.getSportsPlanList()
+        }
       })
     }
   }

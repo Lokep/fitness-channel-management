@@ -120,6 +120,7 @@
 
       <div class="pagination mt-10">
         <el-pagination
+          :current-page.sync="searchQuery.pageNum"
           background
           layout="prev, pager, next"
           :total="total"
