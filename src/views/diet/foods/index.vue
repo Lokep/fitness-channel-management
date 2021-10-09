@@ -70,7 +70,11 @@
         <el-table-column align="center" prop="fat" label="脂肪（克）" />
         <el-table-column align="center" prop="carbonWater" label="碳水（克）" />
         <el-table-column align="center" prop="creatorName" label="发布人" />
-        <el-table-column align="center" prop="createTime" label="发布时间" />
+        <el-table-column align="center" prop="createTime" label="发布时间">
+          <template slot-scope="{ row }">
+            {{ row.createTime | handleTimeFilter }}
+          </template>
+        </el-table-column>
         <el-table-column align="center" label="操作">
           <template slot-scope="{row}">
             <div>
@@ -163,7 +167,14 @@
 <script>
 import { getDishCategoryList, getFoodList } from '@/api/diet'
 import { addFood, editFood } from '@/api/food'
+import dayjs from 'dayjs'
 export default {
+  filters: {
+    handleTimeFilter(time) {
+      if (!time) return ''
+      return dayjs(time).format('YYYY-MM-DD')
+    }
+  },
   data() {
     return {
       params: {
