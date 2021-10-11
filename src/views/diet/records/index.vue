@@ -111,8 +111,8 @@
         <el-table-column align="center" label="操作">
           <template slot-scope="{ row }">
             <div>
-              <el-button v-if="row.isRecord==0" type="text" size="mini" @click="getClockDetail(row.id)">记录</el-button>
-              <el-button v-else type="text" size="mini" @click="getClockDetail(row.id)">修改</el-button>
+              <el-button v-if="row.isRecord==0" type="text" size="mini" @click="getClockDetail(row)">记录</el-button>
+              <el-button v-else type="text" size="mini" @click="getClockDetail(row)">修改</el-button>
             </div>
           </template>
         </el-table-column>
@@ -139,37 +139,37 @@
       <el-row class="dialog-group">
         <el-col :span="12">
           <div class="grid-content bg-purple-dark pt-5 pb-5">
-            <div class="label fl">用户名称:</div> <span>用户名称</span>
+            <div class="label fl">用户名称:</div> <span>{{ memberInfo.wechatName || '--' }}</span>
           </div>
         </el-col>
         <el-col :span="12">
           <div class="grid-content bg-purple-dark pt-5 pb-5">
-            <div class="label fl">性别:</div> <span>性别</span>
+            <div class="label fl">性别:</div> <span>{{ memberInfo.sex == 1 ? '男' : '女' }}</span>
           </div>
         </el-col>
         <el-col :span="12">
           <div class="grid-content bg-purple-dark pt-5 pb-5">
-            <div class="label fl">出生日期:</div> <span>1999-01-01</span>
+            <div class="label fl">出生日期:</div> <span>{{ memberInfo.birth || '----' }}</span>
           </div>
         </el-col>
         <el-col :span="12">
           <div class="grid-content bg-purple-dark pt-5 pb-5">
-            <div class="label fl">身高:</div> <span>178.2cm</span>
+            <div class="label fl">身高:</div> <span>{{ memberInfo.height || '--' }}cm</span>
           </div>
         </el-col>
         <el-col :span="12">
           <div class="grid-content bg-purple-dark pt-5 pb-5">
-            <div class="label fl">最新体重:</div> <span>--</span>
+            <div class="label fl">最新体重:</div> <span>{{ memberInfo.weight || '--' }} kg</span>
           </div>
         </el-col>
         <el-col :span="12">
           <div class="grid-content bg-purple-dark pt-5 pb-5">
-            <div class="label fl">BMI:</div><span>--</span>
+            <div class="label fl">BMI:</div><span>{{ memberInfo.bmi }}</span>
           </div>
         </el-col>
         <el-col :span="12">
           <div class="grid-content bg-purple-dark pt-5 pb-5">
-            <div class="label fl">血型:</div> <span>--</span>
+            <div class="label fl">血型:</div> <span>{{ enum_blood[memberInfo.blood] || '--' }}</span>
           </div>
         </el-col>
       </el-row>
@@ -294,7 +294,7 @@
         </el-form>
       </el-row>
       <span slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="dialogVisible = false">取消</el-button>
+        <el-button size="mini" @click="dialogVisible = false, memberInfo = {}">取消</el-button>
         <el-button size="mini" type="primary" @click="submitHandle">记录</el-button>
       </span>
     </el-dialog>
@@ -306,6 +306,7 @@ import user from '@/mixin/user'
 import * as dayjs from 'dayjs'
 import { getClockList, getClockDetail, UpdateClockDetail } from '@/api/records'
 import { getFoodCategoryList, getFoodSelectList } from '@/api/food'
+import { getMemberInfo } from '@/api/user'
 export default {
   name: 'DietCecord',
   filters: {
@@ -338,6 +339,9 @@ export default {
   mixins: [user],
   data() {
     return {
+      /** "blood|血型 1:A 2:B 3:AB 4:O 5:未知" */
+      enum_blood: ['--', 'A', 'B', 'AB', 'O', '未知'],
+      memberInfo: {},
       dialogVisible: false,
       readonly: true,
       disabled: true,
@@ -450,16 +454,31 @@ export default {
         console.log(err)
       })
     },
+
     /* 食物打卡详情 */
-    getClockDetail(id) {
+    async getClockDetail({ id, memberId }) {
       this.dialogVisible = true
       this.disabled = false
+
+      this.memberInfo = await this.getMemberInfo(memberId)
+
       getClockDetail({ id }).then(res => {
-        this.detail = res.data
+        this.detail = {
+          ...res.data
+        }
         /* 遍历获取摄入数据 */
         this.getfoodDetail()
       })
     },
+
+    getMemberInfo(id) {
+      return getMemberInfo({ id }).then(res => {
+        if (res.result === 1) {
+          return res.data
+        }
+      })
+    },
+
     /* 食物分类 */
     getFoodCategoryList() {
       getFoodCategoryList({

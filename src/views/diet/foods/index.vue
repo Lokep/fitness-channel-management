@@ -64,7 +64,11 @@
         <el-table-column align="center" type="index" label="序号" />
         <el-table-column align="center" prop="name" label="食物名称" />
         <el-table-column align="center" prop="unit" label="单位" />
-        <el-table-column align="center" prop="categoryId" label="食物分类" />
+        <el-table-column align="center" prop="categoryId" label="食物分类">
+          <template slot-scope="{row}">
+            {{ handleCategory(row.categoryId) }}
+          </template>
+        </el-table-column>
         <el-table-column align="center" prop="heat" label="热量（千卡）" />
         <el-table-column align="center" prop="protein" label="蛋白质（克）" />
         <el-table-column align="center" prop="fat" label="脂肪（克）" />
@@ -212,6 +216,11 @@ export default {
       this.getFoodList()
     },
 
+    handleCategory(categoryId) {
+      const { name } = this.categoryList.find(item => item.id === categoryId)
+      return name
+    },
+
     handlePagination(e) {
       this.params.pageNum = e - 1
       this.getFoodList()
@@ -245,9 +254,14 @@ export default {
         ...this.params,
         pageNum: pageNum + 1
       }).then(res => {
-        console.log(res.data)
         if (res.result === 1) {
-          this.foodList = res.data
+          this.foodList = res.data.map(item => {
+            item.heat = Number(item.heat).toFixed(1)
+            item.protein = Number(item.protein).toFixed(1)
+            item.fat = Number(item.fat).toFixed(1)
+            item.carbonWater = Number(item.carbonWater).toFixed(1)
+            return item
+          })
           this.total = res.total
         }
       })
@@ -269,10 +283,14 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        const { heat, protein, fat, carbonWater } = this.food
+
         addFood({
-          creatorId: '1',
-          creatorName: 'admin',
-          ...this.food
+          ...this.food,
+          heat: Number(heat).toFixed(1),
+          protein: Number(protein).toFixed(1),
+          fat: Number(fat).toFixed(1),
+          carbonWater: Number(carbonWater).toFixed(1)
         }).then(res => {
           if (res.result === 1) {
             this.handleClose()
@@ -294,10 +312,14 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        const { heat, protein, fat, carbonWater } = this.food
+
         editFood({
-          creatorId: '1',
-          creatorName: 'admin',
-          ...this.food
+          ...this.food,
+          heat: Number(heat).toFixed(1),
+          protein: Number(protein).toFixed(1),
+          fat: Number(fat).toFixed(1),
+          carbonWater: Number(carbonWater).toFixed(1)
         }).then(res => {
           if (res.result === 1) {
             this.handleClose()

@@ -58,6 +58,8 @@
 </template>
 
 <script>
+import { login } from '@/api/user'
+import { saveCache } from '@/utils'
 
 export default {
   name: 'Login',
@@ -125,15 +127,14 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          // login({
-          //   ...this.loginForm
-          // }).then(res => {
-          //   if (res.result === 1) {
-          //     saveCache('loginInfo', res.data)
-          //     this.$router.replace('/')
-          //   }
-          // })
-          this.$router.replace('/')
+          login({
+            ...this.loginForm
+          }).then(res => {
+            if (res.result === 1) {
+              saveCache('loginInfo', res.data)
+              this.$router.replace('/')
+            }
+          })
         } else {
           console.log('error submit!!')
           return false

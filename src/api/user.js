@@ -118,3 +118,9 @@ export const updatePwd = data => request({
   data,
   method: 'post'
 })
+
+export const getMemberInfo = data => request({
+  url: '/Admin/Member/get',
+  data,
+  method: 'post'
+})

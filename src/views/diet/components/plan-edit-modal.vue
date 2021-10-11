@@ -36,11 +36,8 @@
           >
             <template slot="title">
               <div>第{{ item.dayNum }}天 </div>
-              <!-- <div>热量：400 千卡</div>
-              <div>蛋白：2.7 克</div>
-              <div>脂肪：3.0 克</div>
-              <div>碳水：0.7 克</div> -->
-              <div>{{ item.dayList | handleDayContainerFilter(foodList) }}</div>
+
+              <!-- <div>{{ item.dayList | handleDayContainerFilter(foodList) }}</div> -->
             </template>
 
             <div class="dialog-form-list">

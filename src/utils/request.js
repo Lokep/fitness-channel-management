@@ -3,6 +3,7 @@ import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
 import * as qs from 'qs'
+import { getCache } from '.'
 /* 请求参数长度 */
 const queryStringLength = 1000
 // create an axios instance
@@ -28,10 +29,31 @@ service.interceptors.request.use(
     if (urlString.length > queryStringLength) {
       urlString = config.url
     }
+
+    const { account = 'Admin', id = '1' } = getCache('loginInfo')
+
+    config.data = {
+      memberId: '',
+
+      ...config.data,
+
+      userId: id,
+      timespan: new Date().getTime(),
+
+      creatorId: id,
+      creatorName: account
+    }
+
+    config.headers = {
+      ...config.headers
+      // sign:
+    }
+
     return {
       method: 'get',
 
       ...config,
+
       url: urlString
     }
   },

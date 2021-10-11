@@ -150,37 +150,37 @@
         <el-col :span="12">
           <div class="grid-content bg-purple-dark pb-5">
             <div class="label fl">性别:</div>
-            <span>{{ detail.sex == 1 ? '男' : '女' }}</span>
+            <span>{{ memberInfo.sex == 1 ? '男' : '女' }}</span>
           </div>
         </el-col>
         <el-col :span="12">
           <div class="grid-content bg-purple-dark pb-5">
             <div class="label fl">出生日期:</div>
-            <span>{{ detail.birth }}</span>
+            <span>{{ memberInfo.birth || '--' }}</span>
           </div>
         </el-col>
         <el-col :span="12">
           <div class="grid-content bg-purple-dark pb-5">
             <div class="label fl">身高:</div>
-            <span>{{ detail.height }}cm</span>
+            <span>{{ memberInfo.height || '--' }}cm</span>
           </div>
         </el-col>
         <el-col :span="12">
           <div class="grid-content bg-purple-dark pb-5">
             <div class="label fl">最新体重:</div>
-            <span>{{ detail.weight }}</span>
+            <span>{{ memberInfo.weight || '--' }}kg</span>
           </div>
         </el-col>
         <el-col :span="12">
           <div class="grid-content bg-purple-dark pb-5">
             <div class="label fl">BMI:</div>
-            <span>BMI</span>
+            <span>{{ memberInfo.bmi || '--' }}</span>
           </div>
         </el-col>
         <el-col :span="12">
           <div class="grid-content bg-purple-dark pb-5">
             <div class="label fl">血型:</div>
-            <span>血型</span>
+            <span>{{ enum_blood[memberInfo.blood] || '--' }}</span>
           </div>
         </el-col>
       </el-row>
@@ -273,7 +273,7 @@
         </el-col>
       </el-row>
       <span slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="dialogVisible = false">取消</el-button>
+        <el-button size="mini" @click="dialogVisible = false, memberInfo = {}">取消</el-button>
         <el-button
           v-if="!disabled"
           size="mini"
@@ -290,6 +290,7 @@ import user from '@/mixin/user'
 import { parseTime } from '@/utils'
 import { getClockList, clockGet, clockUpdate } from '@/api/fitness'
 import dayjs from 'dayjs'
+import { getMemberInfo } from '@/api/user'
 export default {
   filters: {
     mealTypeParse(e) {
@@ -320,6 +321,7 @@ export default {
     return {
       disabled: false,
       dialogVisible: false,
+      memberInfo: {},
       total: 10,
       clockList: [],
       searchQuery: {
@@ -331,7 +333,9 @@ export default {
         pageNum: 1,
         pageSize: 10
       },
-      detail: {}
+      detail: {},
+      /** "blood|血型 1:A 2:B 3:AB 4:O 5:未知" */
+      enum_blood: ['--', 'A', 'B', 'AB', 'O', '未知']
     }
   },
   // computed: {
@@ -403,8 +407,9 @@ export default {
       })
     },
     /* 获取详情，以及判断是否可以编辑 */
-    showDialog(row, disabled = false) {
+    async showDialog(row, disabled = false) {
       this.disabled = disabled
+      this.memberInfo = await this.getMemberInfo(row.memberId)
       clockGet({ id: row.id }).then((res) => {
         this.detail = {
           ...res.data,
@@ -414,8 +419,12 @@ export default {
       })
     },
 
-    getMemberInfo() {
-
+    getMemberInfo(id) {
+      return getMemberInfo({ id }).then(res => {
+        if (res.result === 1) {
+          return res.data
+        }
+      })
     }
   }
 }

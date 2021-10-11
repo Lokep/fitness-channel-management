@@ -437,8 +437,6 @@ export default {
     /*  */
     addPlan() {
       this.detail = {
-        creatorName: this.creatorName,
-        creatorId: this.creatorId,
         planName: '',
         receiveNums: '',
         ruleList: []
