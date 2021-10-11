@@ -331,7 +331,12 @@ export default {
     },
 
     handleSelectionChange(e) {
-      this.memberSelected = e
+      e = e || []
+      const memberSelected = []
+      e.forEach(element => {
+        memberSelected.push(element.id)
+      })
+      this.memberSelected = memberSelected
     },
 
     preview(row) {

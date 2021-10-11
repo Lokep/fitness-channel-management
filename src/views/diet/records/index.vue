@@ -149,7 +149,7 @@
         </el-col>
         <el-col :span="12">
           <div class="grid-content bg-purple-dark pt-5 pb-5">
-            <div class="label fl">出生日期:</div> <span>{{ memberInfo.birth || '----' }}</span>
+            <div class="label fl">出生日期:</div> <span>{{ memberInfo.birth == 'Invalid Date' ? '--' : memberInfo.birth }}</span>
           </div>
         </el-col>
         <el-col :span="12">
@@ -334,6 +334,10 @@ export default {
     handleTimeFilter(e) {
       if (!e) return ''
       return dayjs(e).format('YYYY-MM-DD')
+    },
+    bloodFilter(blood) {
+      const arr = ['未知', 'A', 'B', 'AB', 'O', '未知']
+      return arr[blood] || '未知'
     }
   },
   mixins: [user],
@@ -382,7 +386,6 @@ export default {
       foodList: [],
       foodCheckedList: [],
       foodDetailList: []
-
     }
   },
   computed: {
@@ -468,6 +471,9 @@ export default {
         }
         /* 遍历获取摄入数据 */
         this.getfoodDetail()
+        return res.data.memberId
+      }).then(async(memberId) => {
+        this.memberInfo = await this.getMemberInfo(memberId)
       })
     },
 
@@ -618,6 +624,13 @@ export default {
         }
       })
     }
+    // getMemberInfo(memberId) {
+    //   return getMemberInfo({
+    //     id: memberId
+    //   }).then(res => {
+    //     this.memberInfo = res.data || {}
+    //   })
+    // }
   }
 }
 </script>

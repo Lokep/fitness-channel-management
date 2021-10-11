@@ -144,7 +144,7 @@
         <el-col :span="12">
           <div class="grid-content bg-purple-dark pb-5">
             <div class="label fl">用户名称:</div>
-            <span>{{ detail.memberName }}</span>
+            <span>{{ memberInfo.name }}</span>
           </div>
         </el-col>
         <el-col :span="12">
@@ -156,7 +156,7 @@
         <el-col :span="12">
           <div class="grid-content bg-purple-dark pb-5">
             <div class="label fl">出生日期:</div>
-            <span>{{ memberInfo.birth || '--' }}</span>
+            <span>{{ memberInfo.birth == 'Invalid Date' ? '--' : memberInfo.birth }}</span>
           </div>
         </el-col>
         <el-col :span="12">
@@ -314,6 +314,10 @@ export default {
     handleTimeFilter(time) {
       if (!time) return ''
       return dayjs(time).format('YYYY-MM-DD')
+    },
+    bloodFilter(blood) {
+      const arr = ['未知', 'A', 'B', 'AB', 'O', '未知']
+      return arr[blood] || '未知'
     }
   },
   mixins: [user],
@@ -416,6 +420,9 @@ export default {
           ...row
         }
         this.dialogVisible = true
+        return res.data.memberId
+      }).then(memberId => {
+        this.getMemberInfo(memberId)
       })
     },
 
