@@ -144,43 +144,43 @@
         <el-col :span="12">
           <div class="grid-content bg-purple-dark pb-5">
             <div class="label fl">用户名称:</div>
-            <span>{{ detail.memberName }}</span>
+            <span>{{ memberInfo.name }}</span>
           </div>
         </el-col>
         <el-col :span="12">
           <div class="grid-content bg-purple-dark pb-5">
             <div class="label fl">性别:</div>
-            <span>{{ detail.sex == 1 ? '男' : '女' }}</span>
+            <span>{{ memberInfo.sex == 1 ? '男' : '女' }}</span>
           </div>
         </el-col>
         <el-col :span="12">
           <div class="grid-content bg-purple-dark pb-5">
             <div class="label fl">出生日期:</div>
-            <span>{{ detail.birth }}</span>
+            <span>{{ memberInfo.birth == 'Invalid Date' ? '--' : memberInfo.birth }}</span>
           </div>
         </el-col>
         <el-col :span="12">
           <div class="grid-content bg-purple-dark pb-5">
             <div class="label fl">身高:</div>
-            <span>{{ detail.height }}cm</span>
+            <span>{{ memberInfo.height }}cm</span>
           </div>
         </el-col>
         <el-col :span="12">
           <div class="grid-content bg-purple-dark pb-5">
             <div class="label fl">最新体重:</div>
-            <span>{{ detail.weight }}</span>
+            <span>{{ memberInfo.weight }}</span>
           </div>
         </el-col>
         <el-col :span="12">
           <div class="grid-content bg-purple-dark pb-5">
             <div class="label fl">BMI:</div>
-            <span>BMI</span>
+            <span>{{ memberInfo.bmi }}</span>
           </div>
         </el-col>
         <el-col :span="12">
           <div class="grid-content bg-purple-dark pb-5">
             <div class="label fl">血型:</div>
-            <span>血型</span>
+            <span>{{ memberInfo.blood | bloodFilter }}</span>
           </div>
         </el-col>
       </el-row>
@@ -290,6 +290,7 @@ import user from '@/mixin/user'
 import { parseTime } from '@/utils'
 import { getClockList, clockGet, clockUpdate } from '@/api/fitness'
 import dayjs from 'dayjs'
+import { getMemberInfo } from '@/api/user'
 export default {
   filters: {
     mealTypeParse(e) {
@@ -313,6 +314,10 @@ export default {
     handleTimeFilter(time) {
       if (!time) return ''
       return dayjs(time).format('YYYY-MM-DD')
+    },
+    bloodFilter(blood) {
+      const arr = ['未知', 'A', 'B', 'AB', 'O', '未知']
+      return arr[blood] || '未知'
     }
   },
   mixins: [user],
@@ -331,7 +336,8 @@ export default {
         pageNum: 1,
         pageSize: 10
       },
-      detail: {}
+      detail: {},
+      memberInfo: {}
     }
   },
   // computed: {
@@ -411,11 +417,19 @@ export default {
           ...row
         }
         this.dialogVisible = true
+        return res.data.memberId
+      }).then(memberId => {
+        this.getMemberInfo(memberId)
       })
     },
 
-    getMemberInfo() {
-
+    getMemberInfo(memberId) {
+      // const { }
+      return getMemberInfo({
+        id: memberId
+      }).then(res => {
+        this.memberInfo = res.data || {}
+      })
     }
   }
 }

@@ -117,7 +117,7 @@
         <el-descriptions title="" :column="2">
           <el-descriptions-item label="用户名称">{{ memberInfo.name }}</el-descriptions-item>
           <el-descriptions-item label="性别">{{ memberInfo.sex ? '男' : '女' }}</el-descriptions-item>
-          <el-descriptions-item label="出生日期">{{ memberInfo.birth }}</el-descriptions-item>
+          <el-descriptions-item label="出生日期">{{ memberInfo.birth == 'Invalid Date' ? '--' : memberInfo.birth }}</el-descriptions-item>
           <el-descriptions-item label="身高">{{ memberInfo.height }}</el-descriptions-item>
           <el-descriptions-item label="最新体重">{{ memberInfo.weight }}</el-descriptions-item>
           <el-descriptions-item label="BMI">{{ memberInfo.bmi }}</el-descriptions-item>
@@ -320,7 +320,6 @@ export default {
         id: memberId
       }).then(res => {
         this.memberInfo = res.data || {}
-        console.log(res)
       })
     }
   }
