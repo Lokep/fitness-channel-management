@@ -115,13 +115,13 @@
     <el-dialog title="睡眠记录" width="45%" :visible.sync="isShowDialog">
       <div>
         <el-descriptions title="" :column="2">
-          <el-descriptions-item label="用户名称">{{ record.memberName }}</el-descriptions-item>
-          <el-descriptions-item label="性别">{{ record.sex ? '男' : '女' }}</el-descriptions-item>
-          <el-descriptions-item label="出生日期">{{ record.birth }}</el-descriptions-item>
-          <el-descriptions-item label="身高" />
-          <el-descriptions-item label="最新体重" />
-          <el-descriptions-item label="BMI" />
-          <el-descriptions-item label="血型" />
+          <el-descriptions-item label="用户名称">{{ memberInfo.name }}</el-descriptions-item>
+          <el-descriptions-item label="性别">{{ memberInfo.sex ? '男' : '女' }}</el-descriptions-item>
+          <el-descriptions-item label="出生日期">{{ memberInfo.birth }}</el-descriptions-item>
+          <el-descriptions-item label="身高">{{ memberInfo.height }}</el-descriptions-item>
+          <el-descriptions-item label="最新体重">{{ memberInfo.weight }}</el-descriptions-item>
+          <el-descriptions-item label="BMI">{{ memberInfo.bmi }}</el-descriptions-item>
+          <el-descriptions-item label="血型">{{ memberInfo.blood | bloodFilter }}</el-descriptions-item>
         </el-descriptions>
 
         <hr class="mb-10" style="color: #eee;border:0;background: #eee; height: 1px;">
@@ -178,11 +178,16 @@
 <script>
 import * as dayjs from 'dayjs'
 import { getSleepInfo, getSleepRecords, updateSleepRecord } from '@/api/sleep'
+import { getMemberInfo } from '@/api/user'
 export default {
   filters: {
     handleTimeFilter(time) {
       if (!time) return ''
       return dayjs(time).format('YYYY-MM-DD')
+    },
+    bloodFilter(blood) {
+      const arr = ['未知', 'A', 'B', 'AB', 'O', '未知']
+      return arr[blood] || '未知'
     }
   },
   data() {
@@ -201,7 +206,8 @@ export default {
       },
       record: {
 
-      }
+      },
+      memberInfo: {}
     }
   },
 
@@ -302,14 +308,20 @@ export default {
 
           this.isShowDialog = true
         }
+        return res.data.memberId
+      }).then(memberId => {
+        this.getMemberInfo(memberId)
       })
     },
 
-    getMemberInfo() {
+    getMemberInfo(memberId) {
       // const { }
-      // return getMemberList({
-
-      // })
+      return getMemberInfo({
+        id: memberId
+      }).then(res => {
+        this.memberInfo = res.data || {}
+        console.log(res)
+      })
     }
   }
 }

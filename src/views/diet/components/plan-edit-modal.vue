@@ -40,7 +40,7 @@
               <div>蛋白：2.7 克</div>
               <div>脂肪：3.0 克</div>
               <div>碳水：0.7 克</div> -->
-              <div>{{ item.dayList | handleDayContainerFilter(foodList) }}</div>
+              <div>{{ item.dayList | handleDayContainerFilter(foodList) | computedFilter }}</div>
             </template>
 
             <div class="dialog-form-list">
@@ -106,6 +106,8 @@
                         :min="1"
                         :max="9999"
                         label="描述文字"
+                        :precision="2"
+                        :step="1"
                         @change="e => handleInputChange(e, index, i, idx, 'nums')"
                       />
 
@@ -240,7 +242,7 @@ export default {
     handleContainFilter: function(row = {}, list = []) {
       if (row.foodId && row.nums >= 1) {
         const { heat = 0, protein = 0, fat = 0, carbonWater = 0 } = list.find(item => item.id === row.foodId) || {}
-        return `热量：${heat * row.nums} 千卡 蛋白：${protein * row.nums} 克 脂肪：${fat * row.nums} 克 碳水：${carbonWater * row.nums} 克`
+        return `热量：${(heat * row.nums).toFixed(1)} 千卡 蛋白：${(protein * row.nums).toFixed(1)} 克 脂肪：${(fat * row.nums).toFixed(1)} 克 碳水：${(carbonWater * row.nums).toFixed(1)} 克`
       }
     },
     handleDayContainerFilter(list, foods) {
@@ -263,7 +265,16 @@ export default {
         })
       }
 
-      return `热量：${heats} 千卡 蛋白：${proteins} 克 脂肪：${fats} 克 碳水：${carbonWaters} 克`
+      return `热量：${heats.toFixed(1)} 千卡 蛋白：${proteins.toFixed(1)} 克 脂肪：${fats.toFixed(1)} 克 碳水：${carbonWaters.toFixed(1)} 克`
+    },
+    computedFilter(e) {
+      if (e instanceof Number) {
+        return e.toFixed(1)
+      }
+      if (e instanceof String) {
+        return Number(e).toFixed(1)
+      }
+      return e
     }
   },
   props: {

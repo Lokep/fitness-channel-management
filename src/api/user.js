@@ -118,3 +118,10 @@ export const updatePwd = data => request({
   data,
   method: 'post'
 })
+
+/* 会员信息 */
+export const getMemberInfo = data => request({
+  url: '/Admin/Member/get', // 账户更新密码
+  data,
+  method: 'post'
+})
